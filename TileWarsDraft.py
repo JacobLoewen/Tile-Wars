@@ -20,7 +20,8 @@ grid = [[0 for _ in range(WINDOW // TILE_SIZE)] for _ in range(WINDOW // TILE_SI
 
 tile = pg.rect.Rect([0, 0, TILE_SIZE - 2, TILE_SIZE - 2])
 snake = tile.copy()
-snake.center = get_random_position()
+#snake.center = get_random_position()
+snake.center = (375, 675)
 length = 1
 snake_dir = (0, 0)
 time, time_step = 0, 110*2
@@ -35,10 +36,10 @@ prevSnake = snake.copy()
 idle = 1
 
 ### Colors:
-base_red = (153, 0, 0, 255)
-base_blue = (0, 0, 153, 255)
+base_red = (102, 0, 0, 255)
+base_blue = (0, 0, 102, 255)
 
-character_red = (204, 0, 0, 255)
+character_red = (255, 0, 0, 255)
 character_blue = (0, 0, 204, 255)
 
 red_lvl_one = (255, 102, 102, 255)
@@ -98,7 +99,6 @@ def drawGrid():
 
 SCREEN.fill('black')
 drawGrid()
-homeBases()
 
 while True:
     for event in pg.event.get():
@@ -106,6 +106,9 @@ while True:
             exit()
         if event.type == pg.KEYDOWN:
             print("left: " + str(snake.left) + ", right: " + str(snake.right) + ".")
+            print("top: " + str(snake.top) + ", bottom: " + str(snake.bottom) + ".")
+
+            ### Key is Top; Previous motion was NOT downwards; Tile is NOT currently at a place where it can not be.
             if event.key == pg.K_w and dirs[pg.K_w] and not (snake.top - 2 < 0):
                 snake_dir = (0, -TILE_SIZE)
                 # snake.move_ip(snake_dir)
@@ -158,7 +161,7 @@ while True:
     #[pg.draw.rect(SCREEN, 'green', segment) for segment in segments]
 
 
-    # move snake
+    ### Move Snake and Draw Tiles
     time_now = pg.time.get_ticks()
     if time_now - time > time_step:
         time = time_now
@@ -207,8 +210,16 @@ while True:
         #except:
             #print("No color at this point!")
 
+        ### Draw Previous Snake
         pg.draw.rect(SCREEN, red_lvl_one, prevSnake)
+
+        ### Make 'base' tiles static where the first layer disappears but the player tile does not
+        homeBases()
+
+        ### Draw Character Tile
         pg.draw.rect(SCREEN, character_red, snake)
+
+
         prevSnake = snake.copy()
 
 
@@ -240,8 +251,9 @@ while True:
             if currDir == pg.K_d:
                 snake_dir = (TILE_SIZE, 0)
                 dirs = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 0, pg.K_d: 1}
-        else:
-            dirs = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
+        ### Testing no 'else' so that the tile can not move past border
+        #else:
+            #dirs = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
 
     pg.display.flip()
     clock.tick(60) 
