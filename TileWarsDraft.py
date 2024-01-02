@@ -54,7 +54,7 @@ snake = tile.copy()
 snake.center = (375 + winX, 675 + winY)
 length = 1
 snake_dir = (0, 0)
-time, time_step = 0, 110*8
+time, time_step = 0, 110*2
 food = snake.copy()
 food.center = get_random_position()
 
@@ -189,25 +189,25 @@ def setMove() -> Event:
 
 
 
-def tempMove(c:str):
-    global tempS
-    global tempW
-    global tempD
-    global tempA
+# def tempMove(c:str):
+#     global tempS
+#     global tempW
+#     global tempD
+#     global tempA
 
-    tempS = 0
-    tempW = 0
-    tempD = 0
-    tempA = 0
+#     tempS = 0
+#     tempW = 0
+#     tempD = 0
+#     tempA = 0
 
-    if c == 's':
-        tempS = 1
-    elif c == 'w':
-        tempW = 1
-    elif c == 'd':
-        tempD = 1
-    elif c == 'a':
-        tempA = 1
+#     if c == 's':
+#         tempS = 1
+#     elif c == 'w':
+#         tempW = 1
+#     elif c == 'd':
+#         tempD = 1
+#     elif c == 'a':
+#         tempA = 1
 
 
 #def opposingTile() -> bool:
@@ -243,28 +243,28 @@ while True:
             if event.key == pg.K_w: #and dirs[pg.K_w]:
                 if not (snake.top - 2 < winY):
                     snake_dir = (0, -TILE_SIZE)
-                    tempMove('w')
+                    #tempMove('w')
                     currDir = event.key
                     idle = 0   
 
             elif event.key == pg.K_s:  #and dirs[pg.K_s]:
                 if not (snake.bottom + 2 > WINDOW + winY):
                     snake_dir = (0, TILE_SIZE)
-                    tempMove('s')
+                    #tempMove('s')
                     currDir = event.key
                     idle = 0 
 
             elif event.key == pg.K_a: #and dirs[pg.K_a]:
                 if not (snake.left - 2 < winX):
                     snake_dir = (-TILE_SIZE, 0)
-                    tempMove('a')
+                    #tempMove('a')
                     currDir = event.key
                     idle = 0 
 
             elif event.key == pg.K_d: #and dirs[pg.K_d]:
                 if not (snake.right + 2 > WINDOW + winX):
                     snake_dir = (TILE_SIZE, 0)
-                    tempMove('d') 
+                    #tempMove('d') 
                     currDir = event.key
                     idle = 0 
 
