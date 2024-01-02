@@ -240,28 +240,28 @@ while True:
             # print("GRID: ",grid[gridY][gridX - 1])
 
             ### Key is Top; Previous motion was NOT downwards; Tile is NOT currently at a place where it can not be.
-            if event.key == pg.K_w and dirs[pg.K_w]:
+            if event.key == pg.K_w: #and dirs[pg.K_w]:
                 if not (snake.top - 2 < winY):
                     snake_dir = (0, -TILE_SIZE)
                     tempMove('w')
                     currDir = event.key
                     idle = 0   
 
-            elif event.key == pg.K_s and dirs[pg.K_s]:
+            elif event.key == pg.K_s:  #and dirs[pg.K_s]:
                 if not (snake.bottom + 2 > WINDOW + winY):
                     snake_dir = (0, TILE_SIZE)
                     tempMove('s')
                     currDir = event.key
                     idle = 0 
 
-            elif event.key == pg.K_a and dirs[pg.K_a]:
+            elif event.key == pg.K_a: #and dirs[pg.K_a]:
                 if not (snake.left - 2 < winX):
                     snake_dir = (-TILE_SIZE, 0)
                     tempMove('a')
                     currDir = event.key
                     idle = 0 
 
-            elif event.key == pg.K_d and dirs[pg.K_d]:
+            elif event.key == pg.K_d: #and dirs[pg.K_d]:
                 if not (snake.right + 2 > WINDOW + winX):
                     snake_dir = (TILE_SIZE, 0)
                     tempMove('d') 
@@ -321,6 +321,7 @@ while True:
         # if grid[gridY + 1][gridX] == BLUE_BASE:
         #     ### Can not go Down
         #     dirs[pg.K_w] = 0
+
         if idle == 0:
             if currDir == pg.K_w:
                 snake_dir = (0, -TILE_SIZE)
@@ -345,7 +346,7 @@ while True:
             print("Can no longer go down")
         else:
             snake.move_ip(snake_dir)
-            setMove()
+            #setMove()
 
 
         tuple_add = [snake.center, snake_dir]
