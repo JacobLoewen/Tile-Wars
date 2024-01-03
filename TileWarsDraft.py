@@ -2,7 +2,7 @@ from asyncio import Event
 import pygame as pg
 from random import randrange
 
-currSpeed = 8
+currSpeed = 4
 
 WINDOW = 750
 
@@ -78,17 +78,17 @@ idle = 1
 border = (0, 0, 0, 255)
 blank = (0, 0, 0, 225)
 
-red_base = (102, 0, 0, 255)
-blue_base = (0, 0, 102, 255)
+red_base = (51, 0, 0, 255)
+blue_base = (0, 0, 51, 255)
 
 red_player = (255, 0, 0, 255)
-blue_player = (0, 0, 204, 255)
+blue_player = (0, 0, 255, 255)
 
 red_one = (255, 102, 102, 255)
 blue_one = (102, 102, 255, 255)
 
-red_two = (255, 51, 51, 255)
-blue_two = (51, 51, 255, 255)
+red_two = (153, 0, 0, 255)
+blue_two = (0, 0, 153, 255)
 
 colors = [blank, red_base, blue_base, red_one, blue_one, red_two, blue_two, red_player, blue_player]
 
