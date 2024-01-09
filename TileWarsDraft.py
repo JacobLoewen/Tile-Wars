@@ -70,8 +70,8 @@ idle = 1
 border = (0, 0, 0, 255)
 blank = (0, 0, 0, 225)
 
-red_base = (51, 0, 0, 255)
-blue_base = (0, 0, 51, 255)
+red_base = (255, 0, 127, 255) #red_base = (51, 0, 0, 255)
+blue_base = (127, 0, 255, 255) #blue_base = (0, 0, 51, 255)
 
 red_player = (255, 0, 0, 255)
 blue_player = (0, 0, 255, 255)
