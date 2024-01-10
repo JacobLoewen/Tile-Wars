@@ -40,13 +40,19 @@ get_random_position = lambda: [randrange(*RANGE), randrange(*RANGE)]
 ### Creating a border around grid with value -1 for BORDER
 grid = [[BLANK for _ in range((WINDOW) // TILE_SIZE)] for _ in range((WINDOW) // TILE_SIZE)] # deep copy
 
-prevGrid = 0
+prevRedGrid = 0
+prevBlueGrid = 0
 
 tile = pg.rect.Rect([0, 0, TILE_SIZE - 2, TILE_SIZE - 2])
+
 snakeRed = tile.copy()
 snakeRed.center = (375 + winX, 675 + winY)
+snakeBlue = tile.copy()
+snakeBlue.center = (375 + winX, 175 + winY)
+
 length = 1
 snakeRed_dir = (0, 0)
+snakeBlue_dir = (0, 0)
 time, time_step = 0, 110*currSpeed
 
 ### Food used as Invincibility Blocks
@@ -60,11 +66,15 @@ screenY = WINDOW
 
 clock = pg.time.Clock()
 
-dirs = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
-currDir = pg.K_0
+dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
+dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 1}
+currRedDir = pg.K_0
+currBlueDir = pg.K_1
 prevSnakeRed = snakeRed.copy()
+prevSnakeBlue = snakeBlue.copy()
 
-idle = 1
+idle = 0
+### idle = 1
 
 ### Colors:
 border = (0, 0, 0, 255)
@@ -166,42 +176,82 @@ def drawTiles():
             rect = pg.Rect(pixelX, pixelY, TILE_SIZE, TILE_SIZE)
             pg.draw.rect(SCREEN, colors[grid[y][x]], rect)
 
-def tileColors():
+def tileColors(player: str):
     global snakeRed
-    global prevGrid
+    global snakeBlue
+    global prevRedGrid
+    global prevBlueGrid
 
+    if player == "Red":
 
-    snakeRedX = snakeRed.center[0]
-    snakeRedY = snakeRed.center[1]
+        snakeRedX = snakeRed.center[0]
+        snakeRedY = snakeRed.center[1]
 
-    gridX = int((snakeRedX-winX-25)/50)
-    gridY = int((snakeRedY-winY-25)/50)
+        gridRedX = int((snakeRedX-winX-25)/50)
+        gridRedY = int((snakeRedY-winY-25)/50)
 
-    color = 0
-    if prevGrid == 0:
-        color = 3
-    elif prevGrid == 1:
-        color = 1
-    elif prevGrid == 3 or prevGrid == 5:
-        color = 5
-    elif prevGrid == 4:
-        color = 0
-    elif prevGrid == 6:
-        color = 4
+        colorRed = 0
+        if prevRedGrid == 0:
+            colorRed = 3
+        elif prevRedGrid == 1:
+            colorRed = 1
+        elif prevRedGrid == 3 or prevRedGrid == 5:
+            colorRed = 5
+        elif prevRedGrid == 4:
+            colorRed = 0
+        elif prevRedGrid == 6:
+            colorRed = 4
 
-    pg.draw.rect(SCREEN, colors[color], prevSnakeRed)
+        pg.draw.rect(SCREEN, colors[colorRed], prevSnakeRed)
 
-    ### Get the pixel coords of tile and convert to grid coords and then put in grid
-    prevSnakeRedX = prevSnakeRed.center[0]
-    prevSnakeRedY = prevSnakeRed.center[1]
+        ### Get the pixel coords of tile and convert to grid coords and then put in grid
+        prevSnakeRedX = prevSnakeRed.center[0]
+        prevSnakeRedY = prevSnakeRed.center[1]
 
-    prevGridX = int((prevSnakeRedX-winX-25)/50)
-    prevGridY = int((prevSnakeRedY-winY-25)/50)
+        prevRedGridX = int((prevSnakeRedX-winX-25)/50)
+        prevRedGridY = int((prevSnakeRedY-winY-25)/50)
 
-    grid[prevGridY][prevGridX] = color ### Set the color of the PREVIOUS snakeRed
+        grid[prevRedGridY][prevRedGridX] = colorRed ### Set the color of the PREVIOUS snakeRed
 
-    
-    prevGrid = grid[gridY][gridX] ### Get color of tile that snakeRed is now on
+        
+        prevRedGrid = grid[gridRedY][gridRedX] ### Get color of tile that snakeRed is now on
+
+    ### Blue
+
+    elif player == "Blue":
+
+        snakeBlueX = snakeBlue.center[0]
+        snakeBlueY = snakeBlue.center[1]
+
+        gridBlueX = int((snakeBlueX-winX-25)/50)
+        gridBlueY = int((snakeBlueY-winY-25)/50)
+
+        colorBlue = 0
+        if prevBlueGrid == 0:
+            colorBlue = 4
+        elif prevBlueGrid == 2:
+            colorBlue = 2
+        elif prevBlueGrid == 4 or prevBlueGrid == 6:
+            colorBlue = 6
+        elif prevBlueGrid == 3:
+            colorBlue = 0
+        elif prevBlueGrid == 5:
+            colorBlue = 3
+
+        pg.draw.rect(SCREEN, colors[colorBlue], prevSnakeBlue)
+
+        ### Get the pixel coords of tile and convert to grid coords and then put in grid
+        prevSnakeBlueX = prevSnakeBlue.center[0]
+        prevSnakeBlueY = prevSnakeBlue.center[1]
+
+        prevBlueGridX = int((prevSnakeBlueX-winX-25)/50)
+        prevBlueGridY = int((prevSnakeBlueY-winY-25)/50)
+
+        grid[prevBlueGridY][prevBlueGridX] = colorBlue ### Set the color of the PREVIOUS snakeRed
+
+        
+        prevBlueGrid = grid[gridBlueY][gridBlueX] ### Get color of tile that snakeBlue is now on
+
 
 SCREEN.fill('black')
 drawGrid()
@@ -217,34 +267,65 @@ while True:
             print("left: " + str(snakeRed.left) + ", right: " + str(snakeRed.right) + ".")
             print("top: " + str(snakeRed.top) + ", bottom: " + str(snakeRed.bottom) + ".")
 
-            ### Key is Top; Previous motion was NOT downwards; Tile is NOT currently at a place where it can not be.
+            ### Red Player
             if event.key == pg.K_w:
                 if not (snakeRed.top - 2 < winY):
                     snakeRed_dir = (0, -TILE_SIZE)
-                    currDir = event.key
+                    currRedDir = event.key
                     idle = 0   
 
             elif event.key == pg.K_s:
                 if not (snakeRed.bottom + 2 > WINDOW + winY):
                     snakeRed_dir = (0, TILE_SIZE)
-                    currDir = event.key
+                    currRedDir = event.key
                     idle = 0 
 
             elif event.key == pg.K_a:
                 if not (snakeRed.left - 2 < winX):
                     snakeRed_dir = (-TILE_SIZE, 0)
-                    currDir = event.key
+                    currRedDir = event.key
                     idle = 0 
 
             elif event.key == pg.K_d:
                 if not (snakeRed.right + 2 > WINDOW + winX):
                     snakeRed_dir = (TILE_SIZE, 0)
-                    currDir = event.key
+                    currRedDir = event.key
                     idle = 0 
 
-            elif snakeRed.left - 2 < 0 or snakeRed.right + 2 > WINDOW or snakeRed.top - 2 < 0 or snakeRed.bottom + 2 > WINDOW:
-                idle = 1
-                print("IDLE IS 1: " + str(idle))
+            #elif snakeRed.left - 2 < 0 or snakeRed.right + 2 > WINDOW or snakeRed.top - 2 < 0 or snakeRed.bottom + 2 > WINDOW:
+            #    idle = 1
+            #    print("IDLE IS 1: " + str(idle))
+
+            
+
+            ### Blue Player:
+            if event.key == pg.K_UP:
+                if not (snakeBlue.top - 2 < winY):
+                    snakeBlue_dir = (0, -TILE_SIZE)
+                    currBlueDir = event.key
+                    idle = 0   
+
+            elif event.key == pg.K_DOWN:
+                if not (snakeBlue.bottom + 2 > WINDOW + winY):
+                    snakeBlue_dir = (0, TILE_SIZE)
+                    currBlueDir = event.key
+                    idle = 0 
+
+            elif event.key == pg.K_LEFT:
+                if not (snakeBlue.left - 2 < winX):
+                    snakeBlue_dir = (-TILE_SIZE, 0)
+                    currBlueDir = event.key
+                    idle = 0 
+
+            elif event.key == pg.K_RIGHT:
+                if not (snakeBlue.right + 2 > WINDOW + winX):
+                    snakeBlue_dir = (TILE_SIZE, 0)
+                    currBlueDir = event.key
+                    idle = 0 
+
+            #elif snakeBlue.left - 2 < 0 or snakeBlue.right + 2 > WINDOW or snakeBlue.top - 2 < 0 or snakeBlue.bottom + 2 > WINDOW:
+                #idle = 1
+                #print("IDLE IS 1: " + str(idle))
 
         if event.type == pg.VIDEORESIZE:
             screenX = event.w
@@ -273,37 +354,82 @@ while True:
         snakeRedX = snakeRed.center[0]
         snakeRedY = snakeRed.center[1]
 
-        gridX = int((snakeRedX-winX-25)/50)
-        gridY = int((snakeRedY-winY-25)/50)
+        gridRedX = int((snakeRedX-winX-25)/50)
+        gridRedY = int((snakeRedY-winY-25)/50)
+
+        print("idle:",idle)
 
         if idle == 0:
-            if currDir == pg.K_w:
+            if currRedDir == pg.K_w:
                 snakeRed_dir = (0, -TILE_SIZE)
-                dirs = {pg.K_w: 1, pg.K_s: 0, pg.K_a: 1, pg.K_d: 1}
-            if currDir == pg.K_s:
+                dirsRed = {pg.K_w: 1, pg.K_s: 0, pg.K_a: 1, pg.K_d: 1}
+            if currRedDir == pg.K_s:
                 snakeRed_dir = (0, TILE_SIZE)
-                dirs = {pg.K_w: 0, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
-            if currDir == pg.K_a:
+                dirsRed = {pg.K_w: 0, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
+            if currRedDir == pg.K_a:
                 snakeRed_dir = (-TILE_SIZE, 0)
-                dirs = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 0}
-            if currDir == pg.K_d:
+                dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 0}
+            if currRedDir == pg.K_d:
                 snakeRed_dir = (TILE_SIZE, 0)
-                dirs = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 0, pg.K_d: 1}
+                dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 0, pg.K_d: 1}
 
-        if (snakeRed.left - 2 < winX or grid[gridY][gridX - 1] == BLUE_BASE) and dirs[pg.K_d] == 0:
+        print("winX:",winX,"winX + WINDOW:",winX + WINDOW)
+        print("winY:",winY,"winY + WINDOW:",winY + WINDOW)
+        print(dirsRed)
+
+        if (snakeRed.left - 2 < winX or grid[gridRedY][gridRedX - 1] == BLUE_BASE) and dirsRed[pg.K_d] == 0:
             print("Can no longer go left")
-        elif (snakeRed.right + 2 > WINDOW + winX or grid[gridY][gridX + 1] == BLUE_BASE) and dirs[pg.K_a] == 0:
+        elif (snakeRed.right + 2 > WINDOW + winX or grid[gridRedY][gridRedX + 1] == BLUE_BASE) and dirsRed[pg.K_a] == 0:
             print("Can no longer go right")
-        elif (snakeRed.top - 2 < winY or grid[gridY - 1][gridX] == BLUE_BASE) and dirs[pg.K_s] == 0:
+        elif (snakeRed.top - 2 < winY or grid[gridRedY - 1][gridRedX] == BLUE_BASE) and dirsRed[pg.K_s] == 0:
             print("Can no longer go up")
-        elif (snakeRed.bottom + 2 > WINDOW + winY or grid[gridY + 1][gridX] == BLUE_BASE) and dirs[pg.K_w] == 0:
+        elif (snakeRed.bottom + 2 > WINDOW + winY or grid[gridRedY + 1][gridRedX] == BLUE_BASE) and dirsRed[pg.K_w] == 0:
             print("Can no longer go down")
         else:
             prevSnakeRed = snakeRed.copy()
             snakeRed.move_ip(snakeRed_dir)
-            tileColors()
+            tileColors("Red")
 
         tuple_add = [snakeRed.center, snakeRed_dir]
+
+
+        ### Draw Previous snakeBlue with color based on the grid tile the player went over:
+
+        snakeBlueX = snakeBlue.center[0]
+        snakeBlueY = snakeBlue.center[1]
+
+        gridBlueX = int((snakeBlueX-winX-25)/50)
+        gridBlueY = int((snakeBlueY-winY-25)/50)
+
+        if idle == 0:
+            if currBlueDir == pg.K_UP:
+                snakeBlue_dir = (0, -TILE_SIZE)
+                dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 0, pg.K_LEFT: 1, pg.K_RIGHT: 1}
+            if currBlueDir == pg.K_DOWN:
+                snakeBlue_dir = (0, TILE_SIZE)
+                dirsBlue = {pg.K_UP: 0, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 1}
+            if currBlueDir == pg.K_LEFT:
+                snakeBlue_dir = (-TILE_SIZE, 0)
+                dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 0}
+            if currBlueDir == pg.K_RIGHT:
+                snakeBlue_dir = (TILE_SIZE, 0)
+                dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 0, pg.K_RIGHT: 1}
+
+        if (snakeBlue.left - 2 < winX or grid[gridBlueY][gridBlueX - 1] == BLUE_BASE) and dirsBlue[pg.K_RIGHT] == 0:
+            print("Can no longer go left")
+        elif (snakeBlue.right + 2 > WINDOW + winX or grid[gridBlueY][gridBlueX + 1] == BLUE_BASE) and dirsBlue[pg.K_LEFT] == 0:
+            print("Can no longer go right")
+        elif (snakeBlue.top - 2 < winY or grid[gridBlueY - 1][gridBlueX] == BLUE_BASE) and dirsBlue[pg.K_DOWN] == 0:
+            print("Can no longer go up")
+        elif (snakeBlue.bottom + 2 > WINDOW + winY or grid[gridBlueY + 1][gridBlueX] == BLUE_BASE) and dirsBlue[pg.K_UP] == 0:
+            print("Can no longer go down")
+        else:
+            prevSnakeBlue = snakeBlue.copy()
+            snakeBlue.move_ip(snakeBlue_dir)
+            tileColors("Blue")
+
+        tuple_add = [snakeBlue.center, snakeBlue_dir]
+
 
         ### Draw Grid
         drawGrid()
@@ -313,6 +439,7 @@ while True:
 
         ### Draw Character Tile
         pg.draw.rect(SCREEN, colors[RED_PLAYER], snakeRed)
+        pg.draw.rect(SCREEN, colors[BLUE_PLAYER], snakeBlue)
 
         print()
 
