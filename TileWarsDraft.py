@@ -43,6 +43,8 @@ grid = [[BLANK for _ in range((WINDOW) // TILE_SIZE)] for _ in range((WINDOW) //
 prevRedGrid = 0
 prevBlueGrid = 0
 
+foodEaten = True
+
 tile = pg.rect.Rect([0, 0, TILE_SIZE - 2, TILE_SIZE - 2])
 
 snakeRed = tile.copy()
@@ -57,7 +59,7 @@ time, time_step = 0, 110*currSpeed
 
 ### Food used as Invincibility Blocks
 food = snakeRed.copy()
-food.center = get_random_position()
+#food.center = get_random_position()
 
 SCREEN = pg.display.set_mode((screenX, screenY), pg.RESIZABLE)
 
@@ -338,6 +340,12 @@ while True:
             snakeRed.move_ip(winX-prevWinX, winY-prevWinY)
             prevSnakeRed.move_ip(winX-prevWinX, winY-prevWinY)
 
+            RANGE = (TILE_SIZE // 2, prevWinX - TILE_SIZE // 2, TILE_SIZE)
+
+            snakeBlue.move_ip(winX-prevWinX, winY-prevWinY)
+            prevSnakeBlue.move_ip(winX-prevWinX, winY-prevWinY)
+            food.move_ip(winX-prevWinX, winY-prevWinY)
+
             ### Make screen Black, call drawGrid, and redraw all tiles
 
             SCREEN.fill('black')
@@ -348,6 +356,10 @@ while True:
     time_now = pg.time.get_ticks()
     if time_now - time > time_step:
         time = time_now
+
+        if foodEaten:
+            food.center = get_random_position()
+            foodEaten = False
 
         ### Draw Previous snakeRed with color based on the grid tile the player went over:
 
@@ -415,13 +427,13 @@ while True:
                 snakeBlue_dir = (TILE_SIZE, 0)
                 dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 0, pg.K_RIGHT: 1}
 
-        if (snakeBlue.left - 2 < winX or grid[gridBlueY][gridBlueX - 1] == BLUE_BASE) and dirsBlue[pg.K_RIGHT] == 0:
+        if (snakeBlue.left - 2 < winX or grid[gridBlueY][gridBlueX - 1] == RED_BASE) and dirsBlue[pg.K_RIGHT] == 0:
             print("Can no longer go left")
-        elif (snakeBlue.right + 2 > WINDOW + winX or grid[gridBlueY][gridBlueX + 1] == BLUE_BASE) and dirsBlue[pg.K_LEFT] == 0:
+        elif (snakeBlue.right + 2 > WINDOW + winX or grid[gridBlueY][gridBlueX + 1] == RED_BASE) and dirsBlue[pg.K_LEFT] == 0:
             print("Can no longer go right")
-        elif (snakeBlue.top - 2 < winY or grid[gridBlueY - 1][gridBlueX] == BLUE_BASE) and dirsBlue[pg.K_DOWN] == 0:
+        elif (snakeBlue.top - 2 < winY or grid[gridBlueY - 1][gridBlueX] == RED_BASE) and dirsBlue[pg.K_DOWN] == 0:
             print("Can no longer go up")
-        elif (snakeBlue.bottom + 2 > WINDOW + winY or grid[gridBlueY + 1][gridBlueX] == BLUE_BASE) and dirsBlue[pg.K_UP] == 0:
+        elif (snakeBlue.bottom + 2 > WINDOW + winY or grid[gridBlueY + 1][gridBlueX] == RED_BASE) and dirsBlue[pg.K_UP] == 0:
             print("Can no longer go down")
         else:
             prevSnakeBlue = snakeBlue.copy()
@@ -440,6 +452,7 @@ while True:
         ### Draw Character Tile
         pg.draw.rect(SCREEN, colors[RED_PLAYER], snakeRed)
         pg.draw.rect(SCREEN, colors[BLUE_PLAYER], snakeBlue)
+        pg.draw.rect(SCREEN, "white", food)
 
         print()
 
