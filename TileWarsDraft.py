@@ -6,8 +6,8 @@ currSpeed = 4
 
 WINDOW = 750
 
-screenX = 1920
-screenY = 1020
+screenX = 750
+screenY = 800
 
 winX: int = int((screenX - 750) / 2)
 winY: int = int((screenY - 750) / 2)
@@ -105,14 +105,56 @@ power_up = (255, 255, 255, 255)
 
 colors = [blank, red_base, blue_base, red_one, blue_one, red_two, blue_two, red_player, blue_player, power_up]
 
-def homeBases():
+def frontEnd():
+    global snakeRed
+    global snakeBlue
+    global colors
+    global power_iter
     
-    ### Setup Blue home base:
+    SCREEN.fill('black') ### Blanks
+    drawTiles() ### Paths
+
+    ### Make 'base' tiles static where the first layer disappears but the player tile does not
+    homeBases() ### Bases
+
+    ### Draw Character Tile
+    pg.draw.rect(SCREEN, colors[RED_PLAYER], snakeRed) ### Red Player
+    pg.draw.rect(SCREEN, colors[BLUE_PLAYER], snakeBlue) ### Blue Player
+
+    power_iter += 1
+    ### Start with every 10 seconds and go up from there:
+    if power_iter >= 10:
+        invinciblityBlock()
+    
+    ### Draw Grid
+    drawGrid()
+
+
+def invinciblityBlock():
+    global power
+    global colors
+    global power_iter
+
+    pg.draw.rect(SCREEN, colors[POWER_UP], power)
+
+    ### Add power_up to grid
+    powerX = power.center[0]
+    powerY = power.center[1]
+
+    powerGridX = int((powerX-winX-25)/50)
+    powerGridY = int((powerY-winY-25)/50)
+
+    grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
+
+    power_iter = 0
+
+def homeBases():
     global SCREEN
     global tile
     global winX
     global winY
 
+    ### Setup Blue home base:
     for posX in range(25, 775, 50):
         h = 25
         if posX >= 225 and posX < 275:
@@ -127,11 +169,19 @@ def homeBases():
             h = 75
         for posY in range(25, h, 50):
             tile.center = (posX + winX, posY + winY)
-            pg.draw.rect(SCREEN, colors[BLUE_BASE], tile)
 
             gridX = int((posX-25)/50)
             gridY = int((posY-25)/50)
-            grid[gridY][gridX] = BLUE_BASE
+            
+            currTile = grid[gridY][gridX]
+            print("currTile:",currTile," POWER_UP:",POWER_UP,"GridY:",gridY,"GridX:",gridX)
+        
+            if currTile == POWER_UP: ### If not invincibility block, then put base
+                grid[gridY][gridX] = POWER_UP
+            else:
+                grid[gridY][gridX] = BLUE_BASE
+            
+            pg.draw.rect(SCREEN, colors[grid[gridY][gridX]], tile)
     
     ### Setup Red home base:
     for posX in range(25, 775, 50):
@@ -148,13 +198,17 @@ def homeBases():
             h = 725
         for posY in range(h, 775, 50):
             tile.center = (posX + winX, posY + winY)
-            pg.draw.rect(SCREEN, colors[RED_BASE], tile)
 
             gridX = int((posX-25)/50)
             gridY = int((posY-25)/50)
             
-            #print("Grid Values:",gridX,gridY)
-            grid[gridY][gridX] = RED_BASE
+            currTile = grid[gridY][gridX]
+            if currTile == POWER_UP: ### If not invincibility block, then put base
+                grid[gridY][gridX] = POWER_UP
+            else:    
+                grid[gridY][gridX] = RED_BASE
+
+            pg.draw.rect(SCREEN, colors[grid[gridY][gridX]], tile)
 
 def drawGrid():
     global TILE_SIZE
@@ -167,10 +221,6 @@ def drawGrid():
     for x in range(winX, WINDOW_WIDTH, TILE_SIZE):
         for y in range(winY, WINDOW_HEIGHT, TILE_SIZE):
             rect = pg.Rect(x, y, TILE_SIZE, TILE_SIZE)
-
-            #gridX = int((posX-25)/50)
-            #gridY = int((posY-25)/50)
-
             pg.draw.rect(SCREEN, 'white', rect, 1)
 
 def drawTiles():
@@ -273,8 +323,8 @@ def tileColors(player: str):
 
 
 
-SCREEN.fill('black')
-drawGrid()
+#SCREEN.fill('black')
+#drawGrid()
 
 ### This while loop has full respect to RED PLAYER
 while True:
@@ -371,8 +421,8 @@ while True:
 
             ### Make screen Black, call drawGrid, and redraw all tiles
 
-            SCREEN.fill('black')
-            drawTiles()
+            #SCREEN.fill('black')
+            #drawTiles()
 
     
 
@@ -466,31 +516,8 @@ while True:
 
         tuple_add = [snakeBlue.center, snakeBlue_dir]
 
-
-        ### Draw Grid
-        drawGrid()
-        
-        ### Make 'base' tiles static where the first layer disappears but the player tile does not
-        homeBases()
-
-        ### Draw Character Tile
-        pg.draw.rect(SCREEN, colors[RED_PLAYER], snakeRed)
-        pg.draw.rect(SCREEN, colors[BLUE_PLAYER], snakeBlue)
-
-        power_iter += 1
-        ### Start with every 10 seconds and go up from there:
-        if power_iter >= 10:
-            pg.draw.rect(SCREEN, colors[POWER_UP], power)
-            ### Add power_up to grid
-            powerX = power.center[0]
-            powerY = power.center[1]
-
-            powerGridX = int((powerX-winX-25)/50)
-            powerGridY = int((powerY-winY-25)/50)
-
-            grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
-
-            power_iter = 0
+        ### Draw all Front-End components:
+        frontEnd()
 
         print()
 
