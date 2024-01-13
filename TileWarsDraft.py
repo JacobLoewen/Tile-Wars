@@ -25,15 +25,17 @@ RED_TWO = 5
 BLUE_TWO = 6
 RED_PLAYER = 7
 BLUE_PLAYER = 8
+POWER_UP = 9
 
 # 25, 775, 50
-RANGE = (TILE_SIZE // 2, WINDOW - TILE_SIZE // 2, TILE_SIZE) # The '//' function is division but rounds the number down as well (into int format)
+RANGEX = ((TILE_SIZE // 2) + winX, (WINDOW - TILE_SIZE // 2) + winX + 2, TILE_SIZE) # The '//' function is division but rounds the number down as well (into int format)
+RANGEY = ((TILE_SIZE // 2) + winY, (WINDOW - TILE_SIZE // 2) + winY + 2, TILE_SIZE)
 
 # random.randrange(start, stop[, step]) The ", step" function specifies that within the range from start to stop, it will not get a random
 # number where it does not equal (start + (step * n)), n is an element of integers. For example: For 25, 775, 50, the step is 50, so it will get
 # random values in the list of 25, 75, 125, 175, 225, ..., 625, 675, 725, and 775. It will never get anything like 320 or 710. 
 # These values represent the CENTER of the tile
-get_random_position = lambda: [randrange(*RANGE), randrange(*RANGE)]
+get_random_position = lambda: [randrange(*RANGEX), randrange(*RANGEY)]
 
 ### Create grid | In order to exchange grid -> positioning, do formula y = 25 + 50x where x is the position of the tile in range (0, 14). For
 ### positioning -> grid, it will be x = (y - 25)/50 where y is the position number from range (25, 775). 
@@ -50,15 +52,20 @@ tile = pg.rect.Rect([0, 0, TILE_SIZE - 2, TILE_SIZE - 2])
 snakeRed = tile.copy()
 snakeRed.center = (375 + winX, 675 + winY)
 snakeBlue = tile.copy()
-snakeBlue.center = (375 + winX, 175 + winY)
+snakeBlue.center = (375 + winX, 75 + winY)
 
 length = 1
 snakeRed_dir = (0, 0)
 snakeBlue_dir = (0, 0)
 time, time_step = 0, 110*currSpeed
 
-### Food used as Invincibility Blocks
-food = snakeRed.copy()
+### Power used as Invincibility Blocks
+power = snakeRed.copy()
+power_iter = 0
+
+powerCountRed = 0
+powerCountBlue = 0
+
 #food.center = get_random_position()
 
 SCREEN = pg.display.set_mode((screenX, screenY), pg.RESIZABLE)
@@ -94,7 +101,9 @@ blue_one = (102, 102, 255, 255)
 red_two = (153, 0, 0, 255)
 blue_two = (0, 0, 153, 255)
 
-colors = [blank, red_base, blue_base, red_one, blue_one, red_two, blue_two, red_player, blue_player]
+power_up = (255, 255, 255, 255)
+
+colors = [blank, red_base, blue_base, red_one, blue_one, red_two, blue_two, red_player, blue_player, power_up]
 
 def homeBases():
     
@@ -183,6 +192,8 @@ def tileColors(player: str):
     global snakeBlue
     global prevRedGrid
     global prevBlueGrid
+    global powerCountRed
+    global powerCountBlue
 
     if player == "Red":
 
@@ -203,6 +214,9 @@ def tileColors(player: str):
             colorRed = 0
         elif prevRedGrid == 6:
             colorRed = 4
+        elif prevRedGrid == 9:
+            colorRed = 0
+            powerCountRed += 1
 
         pg.draw.rect(SCREEN, colors[colorRed], prevSnakeRed)
 
@@ -239,6 +253,9 @@ def tileColors(player: str):
             colorBlue = 0
         elif prevBlueGrid == 5:
             colorBlue = 3
+        elif prevBlueGrid == 9:
+            colorBlue = 0
+            powerCountBlue += 1
 
         pg.draw.rect(SCREEN, colors[colorBlue], prevSnakeBlue)
 
@@ -255,6 +272,7 @@ def tileColors(player: str):
         prevBlueGrid = grid[gridBlueY][gridBlueX] ### Get color of tile that snakeBlue is now on
 
 
+
 SCREEN.fill('black')
 drawGrid()
 
@@ -266,6 +284,8 @@ while True:
         if event.type == pg.KEYDOWN:
             for i in grid:
                 print(i)
+            print("powerCountRed:",powerCountRed)
+            print("powerCountBlue:",powerCountBlue)
             print("left: " + str(snakeRed.left) + ", right: " + str(snakeRed.right) + ".")
             print("top: " + str(snakeRed.top) + ", bottom: " + str(snakeRed.bottom) + ".")
 
@@ -340,26 +360,30 @@ while True:
             snakeRed.move_ip(winX-prevWinX, winY-prevWinY)
             prevSnakeRed.move_ip(winX-prevWinX, winY-prevWinY)
 
-            RANGE = (TILE_SIZE // 2, prevWinX - TILE_SIZE // 2, TILE_SIZE)
+            RANGEX = ((TILE_SIZE // 2) + winX, (WINDOW - TILE_SIZE // 2) + winX, TILE_SIZE) # The '//' function is division but rounds the number down as well (into int format)
+            RANGEY = ((TILE_SIZE // 2) + winY, (WINDOW - TILE_SIZE // 2) + winY, TILE_SIZE)
+
+            get_random_position = lambda: [randrange(*RANGEX), randrange(*RANGEY)]
 
             snakeBlue.move_ip(winX-prevWinX, winY-prevWinY)
             prevSnakeBlue.move_ip(winX-prevWinX, winY-prevWinY)
-            food.move_ip(winX-prevWinX, winY-prevWinY)
+            power.move_ip(winX-prevWinX, winY-prevWinY)
 
             ### Make screen Black, call drawGrid, and redraw all tiles
 
             SCREEN.fill('black')
             drawTiles()
 
+    
 
     ### Move snakeRed and Draw Tiles
     time_now = pg.time.get_ticks()
     if time_now - time > time_step:
         time = time_now
 
-        if foodEaten:
-            food.center = get_random_position()
-            foodEaten = False
+        #if foodEaten:
+        power.center = get_random_position()
+            #foodEaten = False
 
         ### Draw Previous snakeRed with color based on the grid tile the player went over:
 
@@ -452,7 +476,21 @@ while True:
         ### Draw Character Tile
         pg.draw.rect(SCREEN, colors[RED_PLAYER], snakeRed)
         pg.draw.rect(SCREEN, colors[BLUE_PLAYER], snakeBlue)
-        pg.draw.rect(SCREEN, "white", food)
+
+        power_iter += 1
+        ### Start with every 10 seconds and go up from there:
+        if power_iter >= 10:
+            pg.draw.rect(SCREEN, colors[POWER_UP], power)
+            ### Add power_up to grid
+            powerX = power.center[0]
+            powerY = power.center[1]
+
+            powerGridX = int((powerX-winX-25)/50)
+            powerGridY = int((powerY-winY-25)/50)
+
+            grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
+
+            power_iter = 0
 
         print()
 
