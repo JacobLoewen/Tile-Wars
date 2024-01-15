@@ -2,14 +2,19 @@ from asyncio import Event
 import pygame as pg
 from random import randrange
 
-currSpeed = 4
+pg.init()
+
+currSpeed = 8
 
 WINDOW = 750
 
-screenX = 750
-screenY = 800
+screenX = 1920
+screenY = 1080
 
+#585
 winX: int = int((screenX - 750) / 2)
+
+#165
 winY: int = int((screenY - 750) / 2)
 
 TILE_SIZE = 50
@@ -29,13 +34,16 @@ POWER_UP = 9
 
 # 25, 775, 50
 RANGEX = ((TILE_SIZE // 2) + winX, (WINDOW - TILE_SIZE // 2) + winX + 2, TILE_SIZE) # The '//' function is division but rounds the number down as well (into int format)
-RANGEY = ((TILE_SIZE // 2) + winY, (WINDOW - TILE_SIZE // 2) + winY + 2, TILE_SIZE)
+RANGEYRed = ((TILE_SIZE // 2) + winY + (WINDOW // 2) - 25, (WINDOW - TILE_SIZE // 2) + winY + 2, TILE_SIZE)
+RANGEYBlue = ((TILE_SIZE // 2) + winY, (WINDOW - TILE_SIZE // 2) - (WINDOW // 2) + 25 + winY + 2, TILE_SIZE)
 
 # random.randrange(start, stop[, step]) The ", step" function specifies that within the range from start to stop, it will not get a random
 # number where it does not equal (start + (step * n)), n is an element of integers. For example: For 25, 775, 50, the step is 50, so it will get
 # random values in the list of 25, 75, 125, 175, 225, ..., 625, 675, 725, and 775. It will never get anything like 320 or 710. 
 # These values represent the CENTER of the tile
-get_random_position = lambda: [randrange(*RANGEX), randrange(*RANGEY)]
+
+get_random_position_red = lambda: [randrange(*RANGEX), randrange(*RANGEYRed)]
+get_random_position_blue = lambda: [randrange(*RANGEX), randrange(*RANGEYBlue)]
 
 ### Create grid | In order to exchange grid -> positioning, do formula y = 25 + 50x where x is the position of the tile in range (0, 14). For
 ### positioning -> grid, it will be x = (y - 25)/50 where y is the position number from range (25, 775). 
@@ -44,6 +52,9 @@ grid = [[BLANK for _ in range((WINDOW) // TILE_SIZE)] for _ in range((WINDOW) //
 
 prevRedGrid = 0
 prevBlueGrid = 0
+
+redMoveCounter = 0
+blueMoveCounter = 0
 
 foodEaten = True
 
@@ -57,7 +68,7 @@ snakeBlue.center = (375 + winX, 75 + winY)
 length = 1
 snakeRed_dir = (0, 0)
 snakeBlue_dir = (0, 0)
-time, time_step = 0, 110*currSpeed
+time, time_step = 0, 250
 
 ### Power used as Invincibility Blocks
 power = snakeRed.copy()
@@ -103,6 +114,27 @@ blue_two = (0, 0, 153, 255)
 
 power_up = (255, 255, 255, 255)
 
+
+### Oli's color codes
+# border = (0, 0, 0, 255)
+# blank = (0, 0, 0, 225)
+
+# red_base = (244, 151, 122, 255) #red_base = (51, 0, 0, 255)
+# blue_base = (114, 182, 198, 255) #blue_base = (0, 0, 51, 255)
+
+# red_player = (212, 55, 39, 255)
+# blue_player = (38, 70, 137, 255)
+
+# red_one = (254, 196, 96, 255)
+# blue_one = (140, 168, 68, 255)
+
+# red_two = (245, 157, 66, 255)
+# blue_two = (13, 70, 36, 255)
+
+# power_up = (255, 255, 255, 255)
+
+
+
 colors = [blank, red_base, blue_base, red_one, blue_one, red_two, blue_two, red_player, blue_player, power_up]
 
 def frontEnd():
@@ -114,6 +146,8 @@ def frontEnd():
     SCREEN.fill('black') ### Blanks
     drawTiles() ### Paths
 
+    sideFeatures()
+
     ### Make 'base' tiles static where the first layer disappears but the player tile does not
     homeBases() ### Bases
 
@@ -121,20 +155,76 @@ def frontEnd():
     pg.draw.rect(SCREEN, colors[RED_PLAYER], snakeRed) ### Red Player
     pg.draw.rect(SCREEN, colors[BLUE_PLAYER], snakeBlue) ### Blue Player
 
+    #Could make it be a 'draw character tile' function which takes the parameter of the tile in front and then decides whether it draws it or not
+
     power_iter += 1
     ### Start with every 10 seconds and go up from there:
-    if power_iter >= 10:
-        invinciblityBlock()
+    if power_iter >= 60: ### 30 seconds * 2 1/2 seconds of time iteration equals 60 half seconds
+        invinciblityBlockBlue()
+        invinciblityBlockRed()
     
     ### Draw Grid
     drawGrid()
 
+def sideFeatures():
+    global snakeRed
+    global powerCountRed
+    global powerCountBlue
 
-def invinciblityBlock():
-    global power
+    redPowerCounterTile = snakeRed.copy()
+    bluePowerCounterTile = snakeRed.copy()
+    redPowerCounterTile.center = (winX - 250, winY + 100)
+    bluePowerCounterTile.center = (winX + WINDOW + 150, 100 + winY)
+    pg.draw.rect(SCREEN, colors[POWER_UP], redPowerCounterTile)
+    pg.draw.rect(SCREEN, colors[POWER_UP], bluePowerCounterTile)
+
+
+    ### Draw player score areas:
+
+    ### Starting with Red:
+
+    pg.draw.line(SCREEN, colors[RED_TWO], ((winX - 350), (winY + 750)),((winX - 350), (winY)), 15)
+    pg.draw.line(SCREEN, colors[RED_TWO], ((winX - 50), (winY + 750)),((winX - 50), (winY)), 15)
+    pg.draw.line(SCREEN, colors[RED_TWO], ((winX - 350), (winY)),((winX - 50), (winY)), 15)
+    pg.draw.line(SCREEN, colors[RED_TWO], ((winX - 350), (winY + 750)),((winX - 50), (winY + 750)), 15)
+
+    ### Create the font:
+    font = pg.font.Font('Questrial-Regular.ttf', 65)
+    text_render = font.render("x ", True, (255, 255, 255))
+    #text_position = (376, 228)
+    text_position = (winX - 209, winY + 63)
+    SCREEN.blit(text_render, text_position)
+    text_render = font.render(str(powerCountRed), True, (255, 255, 255))
+    #text_position = (420, 232)
+    text_position = (winX - 165, winY + 67)
+    SCREEN.blit(text_render, text_position)
+
+    ### Starting with Blue:
+
+    pg.draw.line(SCREEN, colors[BLUE_TWO], ((winX + 350 + WINDOW), (winY + 750)),((winX + 350 + WINDOW), (winY)), 15)
+    pg.draw.line(SCREEN, colors[BLUE_TWO], ((winX + 50 + WINDOW), (winY + 750)),((winX + 50 + WINDOW), (winY)), 15)
+    pg.draw.line(SCREEN, colors[BLUE_TWO], ((winX + 350 + WINDOW), (winY)),((winX + 50 + WINDOW), (winY)), 15)
+    pg.draw.line(SCREEN, colors[BLUE_TWO], ((winX + 350 + WINDOW), (winY + 750)),((winX + 50 + WINDOW), (winY + 750)), 15)
+
+    ### Create the font:
+    font = pg.font.Font('Questrial-Regular.ttf', 65)
+    text_render = font.render("x ", True, (255, 255, 255))
+    #text_position = (1526,228)
+    text_position = (winX + 941, winY + 63)
+    SCREEN.blit(text_render, text_position)
+    text_render = font.render(str(powerCountBlue), True, (255, 255, 255))
+    #text_position = (1570,232)
+    text_position = (winX + 985, winY + 67)
+    SCREEN.blit(text_render, text_position)
+
+
+
+def invinciblityBlockRed():
+    global power 
     global colors
     global power_iter
 
+    power.center = get_random_position_red()
     pg.draw.rect(SCREEN, colors[POWER_UP], power)
 
     ### Add power_up to grid
@@ -148,6 +238,27 @@ def invinciblityBlock():
 
     power_iter = 0
 
+def invinciblityBlockBlue():
+    global power
+    global colors
+    global power_iter
+
+    power.center = get_random_position_blue()
+    pg.draw.rect(SCREEN, colors[POWER_UP], power)
+
+    ### Add power_up to grid
+    powerX = power.center[0]
+    powerY = power.center[1]
+
+    powerGridX = int((powerX-winX-25)/50)
+    powerGridY = int((powerY-winY-25)/50)
+
+    grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
+
+    power_iter = 0
+
+
+
 def homeBases():
     global SCREEN
     global tile
@@ -158,15 +269,19 @@ def homeBases():
     for posX in range(25, 775, 50):
         h = 25
         if posX >= 225 and posX < 275:
-            h = 75
+            h = 175
         elif posX >= 275 and posX < 325:
             h = 125
-        elif posX >= 325 and posX < 475:
+        elif posX >= 325 and posX < 375:
+            h = 175
+        elif posX >= 375 and posX < 425:
+            h = 125
+        elif posX >= 425 and posX < 475:
             h = 175
         elif posX >= 475 and posX < 525:
             h = 125
         elif posX >= 525 and posX < 575:
-            h = 75
+            h = 175
         for posY in range(25, h, 50):
             tile.center = (posX + winX, posY + winY)
 
@@ -187,15 +302,19 @@ def homeBases():
     for posX in range(25, 775, 50):
         h = 775
         if posX >= 225 and posX < 275:
-            h = 725
+            h = 625
         elif posX >= 275 and posX < 325:
             h = 675
-        elif posX >= 325 and posX < 475:
+        elif posX >= 325 and posX < 375: 
             h = 625
-        elif posX >= 475 and posX < 525:
+        elif posX >= 375 and posX < 425: 
+            h = 675
+        elif posX >= 425 and posX < 475: 
+            h = 625
+        elif posX >= 475 and posX < 525: 
             h = 675
         elif posX >= 525 and posX < 575:
-            h = 725
+            h = 625
         for posY in range(h, 775, 50):
             tile.center = (posX + winX, posY + winY)
 
@@ -410,10 +529,13 @@ while True:
             snakeRed.move_ip(winX-prevWinX, winY-prevWinY)
             prevSnakeRed.move_ip(winX-prevWinX, winY-prevWinY)
 
-            RANGEX = ((TILE_SIZE // 2) + winX, (WINDOW - TILE_SIZE // 2) + winX, TILE_SIZE) # The '//' function is division but rounds the number down as well (into int format)
-            RANGEY = ((TILE_SIZE // 2) + winY, (WINDOW - TILE_SIZE // 2) + winY, TILE_SIZE)
+            RANGEX = ((TILE_SIZE // 2) + winX, (WINDOW - TILE_SIZE // 2) + winX + 2, TILE_SIZE) # The '//' function is division but rounds the number down as well (into int format)
+            RANGEYRed = ((TILE_SIZE // 2) + winY + (WINDOW // 2) - 25, (WINDOW - TILE_SIZE // 2) + winY + 2, TILE_SIZE)
+            RANGEYBlue = ((TILE_SIZE // 2) + winY, (WINDOW - TILE_SIZE // 2) - (WINDOW // 2) + 25 + winY + 2, TILE_SIZE)
 
-            get_random_position = lambda: [randrange(*RANGEX), randrange(*RANGEY)]
+
+            get_random_position_red = lambda: [randrange(*RANGEX), randrange(*RANGEYRed)]
+            get_random_position_blue = lambda: [randrange(*RANGEX), randrange(*RANGEYBlue)]
 
             snakeBlue.move_ip(winX-prevWinX, winY-prevWinY)
             prevSnakeBlue.move_ip(winX-prevWinX, winY-prevWinY)
@@ -430,10 +552,6 @@ while True:
     time_now = pg.time.get_ticks()
     if time_now - time > time_step:
         time = time_now
-
-        #if foodEaten:
-        power.center = get_random_position()
-            #foodEaten = False
 
         ### Draw Previous snakeRed with color based on the grid tile the player went over:
 
@@ -473,8 +591,11 @@ while True:
             print("Can no longer go down")
         else:
             prevSnakeRed = snakeRed.copy()
-            snakeRed.move_ip(snakeRed_dir)
-            tileColors("Red")
+            redMoveCounter += 1
+            if redMoveCounter == 2:
+                snakeRed.move_ip(snakeRed_dir)
+                redMoveCounter = 0
+                tileColors("Red")
 
         tuple_add = [snakeRed.center, snakeRed_dir]
 
@@ -511,8 +632,11 @@ while True:
             print("Can no longer go down")
         else:
             prevSnakeBlue = snakeBlue.copy()
-            snakeBlue.move_ip(snakeBlue_dir)
-            tileColors("Blue")
+            blueMoveCounter += 1
+            if blueMoveCounter == 2:
+                snakeBlue.move_ip(snakeBlue_dir)
+                blueMoveCounter = 0
+                tileColors("Blue")
 
         tuple_add = [snakeBlue.center, snakeBlue_dir]
 
