@@ -4,7 +4,7 @@ from random import randrange
 
 pg.init()
 
-currSpeed = 8
+#currSpeed = 8
 
 WINDOW = 750
 
@@ -68,6 +68,8 @@ snakeBlue.center = (375 + winX, 75 + winY)
 length = 1
 snakeRed_dir = (0, 0)
 snakeBlue_dir = (0, 0)
+
+### Main function for speed:
 time, time_step = 0, 250
 
 ### Power used as Invincibility Blocks
@@ -549,6 +551,7 @@ while True:
     
 
     ### Move snakeRed and Draw Tiles
+    ### Beginning of time steps
     time_now = pg.time.get_ticks()
     if time_now - time > time_step:
         time = time_now
