@@ -56,6 +56,10 @@ prevBlueGrid = 0
 redMoveCounter = 0
 blueMoveCounter = 0
 
+### Increments before loop in move counters, so set default as 1
+redSpeed = 1
+blueSpeed = 1
+
 foodEaten = True
 
 tile = pg.rect.Rect([0, 0, TILE_SIZE - 2, TILE_SIZE - 2])
@@ -358,6 +362,54 @@ def drawTiles():
             rect = pg.Rect(pixelX, pixelY, TILE_SIZE, TILE_SIZE)
             pg.draw.rect(SCREEN, colors[grid[y][x]], rect)
 
+def nextTile():
+    global snakeRed
+    global snakeBlue
+    global snakeRed_dir
+    global snakeBlue_dir
+    global redSpeed
+    global blueSpeed
+
+    ### Get grid of snakeRed currently and then respectively 
+    ### increment to wherever shows the next tile
+    snakeRedX = snakeRed.center[0]
+    snakeRedY = snakeRed.center[1]
+
+    ### Grid may go out of bounds. If this is the case, return
+    ### 1 as the speed.
+    try:
+        gridRedX = int((snakeRedX-winX-25 + snakeRed_dir[0])/50)
+        gridRedY = int((snakeRedY-winY-25 + snakeRed_dir[1])/50)
+    except Exception:
+        redSpeed = 1
+    
+    colorRed = 0
+    if prevRedGrid == 0:
+        colorRed = 3
+        redSpeed = 3
+    elif prevRedGrid == 1:
+        colorRed = 1
+        redSpeed = 2
+    elif prevRedGrid == 3:
+        colorRed = 5
+        redSpeed = 3
+    elif prevRedGrid == 5:
+        colorRed = 5
+        redSpeed = 2
+    elif prevRedGrid == 4:
+        colorRed = 0
+        redSpeed = 3
+    elif prevRedGrid == 6:
+        colorRed = 4
+        redSpeed = 4
+    elif prevRedGrid == 9:
+        colorRed = 0
+        redSpeed = 3
+        powerCountRed += 1
+
+
+
+
 def tileColors(player: str):
     global snakeRed
     global snakeBlue
@@ -365,6 +417,8 @@ def tileColors(player: str):
     global prevBlueGrid
     global powerCountRed
     global powerCountBlue
+    global redSpeed
+    global blueSpeed
 
     if player == "Red":
 
@@ -374,19 +428,34 @@ def tileColors(player: str):
         gridRedX = int((snakeRedX-winX-25)/50)
         gridRedY = int((snakeRedY-winY-25)/50)
 
+        # try:
+        #     gridRedX = int((snakeRedX-winX-25 + snakeRed_dir[0])/50)
+        #     gridRedY = int((snakeRedY-winY-25 + snakeRed_dir[1])/50)
+        # except Exception:
+        #     redSpeed = 1
+
         colorRed = 0
         if prevRedGrid == 0:
             colorRed = 3
+            redSpeed = 3
         elif prevRedGrid == 1:
             colorRed = 1
-        elif prevRedGrid == 3 or prevRedGrid == 5:
+            redSpeed = 2
+        elif prevRedGrid == 3:
             colorRed = 5
+            redSpeed = 3
+        elif prevRedGrid == 5:
+            colorRed = 5
+            redSpeed = 2
         elif prevRedGrid == 4:
             colorRed = 0
+            redSpeed = 3
         elif prevRedGrid == 6:
             colorRed = 4
+            redSpeed = 4
         elif prevRedGrid == 9:
             colorRed = 0
+            redSpeed = 3
             powerCountRed += 1
 
         pg.draw.rect(SCREEN, colors[colorRed], prevSnakeRed)
@@ -595,10 +664,14 @@ while True:
         else:
             prevSnakeRed = snakeRed.copy()
             redMoveCounter += 1
-            if redMoveCounter == 2:
+            
+            if redMoveCounter == redSpeed:
                 snakeRed.move_ip(snakeRed_dir)
                 redMoveCounter = 0
                 tileColors("Red")
+                ### Problem (TO DO): Must have redSpeed be with
+                ### respect to next tile instead of current tile.
+                ### Create function to get next tile in direction
 
         tuple_add = [snakeRed.center, snakeRed_dir]
 
