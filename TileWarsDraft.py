@@ -378,34 +378,29 @@ def nextTile():
     ### Grid may go out of bounds. If this is the case, return
     ### 1 as the speed.
     try:
-        gridRedX = int((snakeRedX-winX-25 + snakeRed_dir[0])/50)
-        gridRedY = int((snakeRedY-winY-25 + snakeRed_dir[1])/50)
+        # gridRedX = int((snakeRedX-winX-25 + snakeRed_dir[0])/50)
+        # gridRedY = int((snakeRedY-winY-25 + snakeRed_dir[1])/50)
+        gridRedX = int((snakeRedX-winX-25)/50)
+        gridRedY = int((snakeRedY-winY-25)/50)
+        currGrid = grid[gridRedY][gridRedX]
+
+        colorRed = 0
+        if currGrid == 0:
+            redSpeed = 3
+        elif currGrid == 1:
+            redSpeed = 2
+        elif currGrid == 3:
+            redSpeed = 3
+        elif currGrid == 5:
+            redSpeed = 2
+        elif currGrid == 4:
+            redSpeed = 3
+        elif currGrid == 6:
+            redSpeed = 4
+        elif currGrid == 9:
+            redSpeed = 3
     except Exception:
         redSpeed = 1
-    
-    colorRed = 0
-    if prevRedGrid == 0:
-        colorRed = 3
-        redSpeed = 3
-    elif prevRedGrid == 1:
-        colorRed = 1
-        redSpeed = 2
-    elif prevRedGrid == 3:
-        colorRed = 5
-        redSpeed = 3
-    elif prevRedGrid == 5:
-        colorRed = 5
-        redSpeed = 2
-    elif prevRedGrid == 4:
-        colorRed = 0
-        redSpeed = 3
-    elif prevRedGrid == 6:
-        colorRed = 4
-        redSpeed = 4
-    elif prevRedGrid == 9:
-        colorRed = 0
-        redSpeed = 3
-        powerCountRed += 1
 
 
 
@@ -428,34 +423,37 @@ def tileColors(player: str):
         gridRedX = int((snakeRedX-winX-25)/50)
         gridRedY = int((snakeRedY-winY-25)/50)
 
+        nextTile()
+
         # try:
         #     gridRedX = int((snakeRedX-winX-25 + snakeRed_dir[0])/50)
         #     gridRedY = int((snakeRedY-winY-25 + snakeRed_dir[1])/50)
         # except Exception:
         #     redSpeed = 1
 
+
         colorRed = 0
         if prevRedGrid == 0:
             colorRed = 3
-            redSpeed = 3
+            #redSpeed = 3
         elif prevRedGrid == 1:
             colorRed = 1
-            redSpeed = 2
+            #redSpeed = 2
         elif prevRedGrid == 3:
             colorRed = 5
-            redSpeed = 3
+            #redSpeed = 3
         elif prevRedGrid == 5:
             colorRed = 5
-            redSpeed = 2
+            #redSpeed = 2
         elif prevRedGrid == 4:
             colorRed = 0
-            redSpeed = 3
+            #redSpeed = 3
         elif prevRedGrid == 6:
             colorRed = 4
-            redSpeed = 4
+            #redSpeed = 4
         elif prevRedGrid == 9:
             colorRed = 0
-            redSpeed = 3
+            #redSpeed = 3
             powerCountRed += 1
 
         pg.draw.rect(SCREEN, colors[colorRed], prevSnakeRed)
