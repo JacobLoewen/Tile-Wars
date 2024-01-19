@@ -147,6 +147,13 @@ def frontEnd():
 
     sideFeatures()
 
+    power_iter += 1
+    ### Start with every 10 seconds and go up from there:
+    if power_iter >= 60: ### 30 seconds * 2 1/2 seconds of time iteration equals 60 half seconds
+    #if power_iter >= 10: ### TEMPORARY
+        invincibilityBlockBlue()
+        invincibilityBlockRed()
+
     ### Make 'base' tiles static where the first layer disappears but the player tile does not
     homeBases() ### Bases
 
@@ -156,11 +163,12 @@ def frontEnd():
 
     #Could make it be a 'draw character tile' function which takes the parameter of the tile in front and then decides whether it draws it or not
 
-    power_iter += 1
-    ### Start with every 10 seconds and go up from there:
-    if power_iter >= 60: ### 30 seconds * 2 1/2 seconds of time iteration equals 60 half seconds
-        invinciblityBlockBlue()
-        invinciblityBlockRed()
+    # power_iter += 1
+    # ### Start with every 10 seconds and go up from there:
+    # if power_iter >= 60: ### 30 seconds * 2 1/2 seconds of time iteration equals 60 half seconds
+    # #if power_iter >= 10: ### TEMPORARY
+    #     invincibilityBlockBlue()
+    #     invincibilityBlockRed()
     
     ### Draw Grid
     drawGrid()
@@ -218,7 +226,7 @@ def sideFeatures():
 
 
 
-def invinciblityBlockRed():
+def invincibilityBlockRed():
     global power 
     global colors
     global power_iter
@@ -237,7 +245,7 @@ def invinciblityBlockRed():
 
     power_iter = 0
 
-def invinciblityBlockBlue():
+def invincibilityBlockBlue():
     global power
     global colors
     global power_iter
@@ -288,12 +296,13 @@ def homeBases():
             gridY = int((posY-25)/50)
             
             currTile = grid[gridY][gridX]
-            print("currTile:",currTile," POWER_UP:",POWER_UP,"GridY:",gridY,"GridX:",gridX)
+            #print("currTile:",currTile," POWER_UP:",POWER_UP,"GridY:",gridY,"GridX:",gridX)
         
             if currTile == POWER_UP: ### If not invincibility block, then put base
-                grid[gridY][gridX] = POWER_UP
-            else:
-                grid[gridY][gridX] = BLUE_BASE
+                #grid[gridY][gridX] = POWER_UP
+                invincibilityBlockBlue()
+            
+            grid[gridY][gridX] = BLUE_BASE
             
             pg.draw.rect(SCREEN, colors[grid[gridY][gridX]], tile)
     
@@ -322,9 +331,11 @@ def homeBases():
             
             currTile = grid[gridY][gridX]
             if currTile == POWER_UP: ### If not invincibility block, then put base
-                grid[gridY][gridX] = POWER_UP
-            else:    
-                grid[gridY][gridX] = RED_BASE
+                #grid[gridY][gridX] = POWER_UP 
+                ### Instead of replacing as power_up, replace as grid and place invincibility block someplace else
+                invincibilityBlockRed()
+               
+            grid[gridY][gridX] = RED_BASE
 
             pg.draw.rect(SCREEN, colors[grid[gridY][gridX]], tile)
 
@@ -334,16 +345,26 @@ def playerCollision():
     
     global powerCountRed
     global powerCountBlue
+    global redSpeed
+    global blueSpeed
+    global redMoveCounter
+    global blueMoveCounter
     
     if powerCountRed > powerCountBlue:
         ### Blue respawns after 3 seconds
         ### And Red's count decreases by
         ### 1 (for now)
+        snakeBlue.center = (375 + winX, 75 + winY)
+        blueSpeed = 12
+        blueMoveCounter = 0
         powerCountRed -= 1
     elif powerCountRed < powerCountBlue:
         ### Red respawns after 3 seconds
         ### And Blue's count decreases
         ### by 1 (for now)
+        snakeRed.center = (375 + winX, 675 + winY)
+        redSpeed = 12
+        redMoveCounter = 0
         powerCountBlue -= 1
 
 def drawGrid():
@@ -548,12 +569,12 @@ while True:
         if event.type == pg.QUIT:
             exit()
         if event.type == pg.KEYDOWN:
-            for i in grid:
-                print(i)
-            print("powerCountRed:",powerCountRed)
-            print("powerCountBlue:",powerCountBlue)
-            print("left: " + str(snakeRed.left) + ", right: " + str(snakeRed.right) + ".")
-            print("top: " + str(snakeRed.top) + ", bottom: " + str(snakeRed.bottom) + ".")
+            #for i in grid:
+            #    print(i)
+            #print("powerCountRed:",powerCountRed)
+            #print("powerCountBlue:",powerCountBlue)
+            #print("left: " + str(snakeRed.left) + ", right: " + str(snakeRed.right) + ".")
+            #print("top: " + str(snakeRed.top) + ", bottom: " + str(snakeRed.bottom) + ".")
 
             ### Red Player
             if event.key == pg.K_w:
@@ -650,7 +671,7 @@ while True:
         gridRedX = int((snakeRedX-winX-25)/50)
         gridRedY = int((snakeRedY-winY-25)/50)
 
-        print("idle:",idle)
+        #print("idle:",idle)
 
         if idle == 0:
             if currRedDir == pg.K_w:
@@ -666,9 +687,9 @@ while True:
                 snakeRed_dir = (TILE_SIZE, 0)
                 dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 0, pg.K_d: 1}
 
-        print("winX:",winX,"winX + WINDOW:",winX + WINDOW)
-        print("winY:",winY,"winY + WINDOW:",winY + WINDOW)
-        print(dirsRed)
+        #print("winX:",winX,"winX + WINDOW:",winX + WINDOW)
+        #print("winY:",winY,"winY + WINDOW:",winY + WINDOW)
+        #print(dirsRed)
 
         if (snakeRed.left - 2 < winX or grid[gridRedY][gridRedX - 1] == BLUE_BASE) and dirsRed[pg.K_d] == 0:
             print("Can no longer go left")
@@ -736,6 +757,30 @@ while True:
         ### Compare the two player
         ### Positions. If they are
         ### Equal, run playerCollision()
+
+        snakeRedX = snakeRed.center[0]
+        snakeRedY = snakeRed.center[1]
+
+        snakeBlueX = snakeBlue.center[0]
+        snakeBlueY = snakeBlue.center[1]
+
+        gridRedX = int((snakeRedX-winX-25)/50)
+        gridRedY = int((snakeRedY-winY-25)/50)
+
+        #gridRed = grid[gridRedY][gridRedX]
+
+
+        gridBlueX = int((snakeBlueX-winX-25)/50)
+        gridBlueY = int((snakeBlueY-winY-25)/50)
+
+        #gridBlue = grid[gridBlueY][gridBlueX]
+
+        print("gridRedY:",gridRedY,"girdBlueY",gridBlueY)
+        print("gridRedX:",gridRedX,"gridBlueX",gridBlueX)
+        if gridRedY == gridBlueY and gridRedX == gridBlueX:
+            playerCollision()
+            print("Player Collision!!!")
+
         ### And then set variable for
         ### halting movement of defeated
         ### player for 3 seconds
