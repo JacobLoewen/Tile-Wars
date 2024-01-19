@@ -362,48 +362,78 @@ def drawTiles():
             rect = pg.Rect(pixelX, pixelY, TILE_SIZE, TILE_SIZE)
             pg.draw.rect(SCREEN, colors[grid[y][x]], rect)
 
-def nextTile():
+def speedAlter(player: str):
     global snakeRed
     global snakeBlue
-    global snakeRed_dir
-    global snakeBlue_dir
     global redSpeed
     global blueSpeed
 
-    ### Get grid of snakeRed currently and then respectively 
-    ### increment to wherever shows the next tile
-    snakeRedX = snakeRed.center[0]
-    snakeRedY = snakeRed.center[1]
+    if player == "Red":
 
-    ### Grid may go out of bounds. If this is the case, return
-    ### 1 as the speed.
-    try:
-        # gridRedX = int((snakeRedX-winX-25 + snakeRed_dir[0])/50)
-        # gridRedY = int((snakeRedY-winY-25 + snakeRed_dir[1])/50)
-        gridRedX = int((snakeRedX-winX-25)/50)
-        gridRedY = int((snakeRedY-winY-25)/50)
-        currGrid = grid[gridRedY][gridRedX]
+        ### Get grid of snakeRed currently and then respectively 
+        ### increment to wherever shows the next tile
+        snakeRedX = snakeRed.center[0]
+        snakeRedY = snakeRed.center[1]
 
-        colorRed = 0
-        if currGrid == 0:
-            redSpeed = 3
-        elif currGrid == 1:
-            redSpeed = 2
-        elif currGrid == 3:
-            redSpeed = 3
-        elif currGrid == 5:
-            redSpeed = 2
-        elif currGrid == 4:
-            redSpeed = 3
-        elif currGrid == 6:
-            redSpeed = 4
-        elif currGrid == 9:
-            redSpeed = 3
-    except Exception:
-        redSpeed = 1
+        ### Grid may go out of bounds. If this is the case, return
+        ### 1 as the speed.
+        try:
+            # gridRedX = int((snakeRedX-winX-25 + snakeRed_dir[0])/50)
+            # gridRedY = int((snakeRedY-winY-25 + snakeRed_dir[1])/50)
+            gridRedX = int((snakeRedX-winX-25)/50)
+            gridRedY = int((snakeRedY-winY-25)/50)
+            currGrid = grid[gridRedY][gridRedX]
 
+            colorRed = 0
+            if currGrid == 0:
+                redSpeed = 3
+            elif currGrid == 1:
+                redSpeed = 2
+            elif currGrid == 3:
+                redSpeed = 3
+            elif currGrid == 5:
+                redSpeed = 2
+            elif currGrid == 4:
+                redSpeed = 3
+            elif currGrid == 6:
+                redSpeed = 4
+            elif currGrid == 9:
+                redSpeed = 3
+        except Exception:
+            redSpeed = 1
 
+    if player == "Blue":
+        ### Get grid of snakeRed currently and then respectively 
+        ### increment to wherever shows the next tile
+        snakeBlueX = snakeBlue.center[0]
+        snakeBlueY = snakeBlue.center[1]
 
+        ### Grid may go out of bounds. If this is the case, return
+        ### 1 as the speed.
+        try:
+            # gridRedX = int((snakeRedX-winX-25 + snakeRed_dir[0])/50)
+            # gridRedY = int((snakeRedY-winY-25 + snakeRed_dir[1])/50)
+            gridBlueX = int((snakeBlueX-winX-25)/50)
+            gridBlueY = int((snakeBlueY-winY-25)/50)
+            currGrid = grid[gridBlueY][gridBlueX]
+
+            colorBlue = 0
+            if currGrid == 0:
+                blueSpeed = 3
+            elif currGrid == 2:
+                blueSpeed = 2
+            elif currGrid == 4:
+                blueSpeed = 3
+            elif currGrid == 6:
+                blueSpeed = 2
+            elif currGrid == 3:
+                blueSpeed = 3
+            elif currGrid == 5:
+                blueSpeed = 4
+            elif currGrid == 9:
+                blueSpeed = 3
+        except Exception:
+            blueSpeed = 1
 
 def tileColors(player: str):
     global snakeRed
@@ -423,37 +453,23 @@ def tileColors(player: str):
         gridRedX = int((snakeRedX-winX-25)/50)
         gridRedY = int((snakeRedY-winY-25)/50)
 
-        nextTile()
-
-        # try:
-        #     gridRedX = int((snakeRedX-winX-25 + snakeRed_dir[0])/50)
-        #     gridRedY = int((snakeRedY-winY-25 + snakeRed_dir[1])/50)
-        # except Exception:
-        #     redSpeed = 1
-
+        speedAlter(player)
 
         colorRed = 0
         if prevRedGrid == 0:
             colorRed = 3
-            #redSpeed = 3
         elif prevRedGrid == 1:
             colorRed = 1
-            #redSpeed = 2
         elif prevRedGrid == 3:
             colorRed = 5
-            #redSpeed = 3
         elif prevRedGrid == 5:
             colorRed = 5
-            #redSpeed = 2
         elif prevRedGrid == 4:
             colorRed = 0
-            #redSpeed = 3
         elif prevRedGrid == 6:
             colorRed = 4
-            #redSpeed = 4
         elif prevRedGrid == 9:
             colorRed = 0
-            #redSpeed = 3
             powerCountRed += 1
 
         pg.draw.rect(SCREEN, colors[colorRed], prevSnakeRed)
@@ -480,6 +496,8 @@ def tileColors(player: str):
         gridBlueX = int((snakeBlueX-winX-25)/50)
         gridBlueY = int((snakeBlueY-winY-25)/50)
 
+        speedAlter(player)
+
         colorBlue = 0
         if prevBlueGrid == 0:
             colorBlue = 4
@@ -505,7 +523,6 @@ def tileColors(player: str):
         prevBlueGridY = int((prevSnakeBlueY-winY-25)/50)
 
         grid[prevBlueGridY][prevBlueGridX] = colorBlue ### Set the color of the PREVIOUS snakeRed
-
         
         prevBlueGrid = grid[gridBlueY][gridBlueX] ### Get color of tile that snakeBlue is now on
 
@@ -552,12 +569,6 @@ while True:
                     currRedDir = event.key
                     idle = 0 
 
-            #elif snakeRed.left - 2 < 0 or snakeRed.right + 2 > WINDOW or snakeRed.top - 2 < 0 or snakeRed.bottom + 2 > WINDOW:
-            #    idle = 1
-            #    print("IDLE IS 1: " + str(idle))
-
-            
-
             ### Blue Player:
             if event.key == pg.K_UP:
                 if not (snakeBlue.top - 2 < winY):
@@ -583,9 +594,6 @@ while True:
                     currBlueDir = event.key
                     idle = 0 
 
-            #elif snakeBlue.left - 2 < 0 or snakeBlue.right + 2 > WINDOW or snakeBlue.top - 2 < 0 or snakeBlue.bottom + 2 > WINDOW:
-                #idle = 1
-                #print("IDLE IS 1: " + str(idle))
 
         if event.type == pg.VIDEORESIZE:
             screenX = event.w
@@ -707,7 +715,7 @@ while True:
         else:
             prevSnakeBlue = snakeBlue.copy()
             blueMoveCounter += 1
-            if blueMoveCounter == 2:
+            if blueMoveCounter == blueSpeed:
                 snakeBlue.move_ip(snakeBlue_dir)
                 blueMoveCounter = 0
                 tileColors("Blue")
