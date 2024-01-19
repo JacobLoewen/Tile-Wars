@@ -153,6 +153,7 @@ def frontEnd():
     #if power_iter >= 10: ### TEMPORARY
         invincibilityBlockBlue()
         invincibilityBlockRed()
+        power_iter = 0
 
     ### Make 'base' tiles static where the first layer disappears but the player tile does not
     homeBases() ### Bases
@@ -241,9 +242,10 @@ def invincibilityBlockRed():
     powerGridX = int((powerX-winX-25)/50)
     powerGridY = int((powerY-winY-25)/50)
 
-    grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
-
-    power_iter = 0
+    if grid[powerGridY][powerGridX] == 1:
+        invincibilityBlockRed()
+    else:
+        grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
 
 def invincibilityBlockBlue():
     global power
@@ -260,7 +262,10 @@ def invincibilityBlockBlue():
     powerGridX = int((powerX-winX-25)/50)
     powerGridY = int((powerY-winY-25)/50)
 
-    grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
+    if grid[powerGridY][powerGridX] == 2:
+        invincibilityBlockBlue()
+    else:
+        grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
 
     power_iter = 0
 
@@ -300,7 +305,10 @@ def homeBases():
         
             if currTile == POWER_UP: ### If not invincibility block, then put base
                 #grid[gridY][gridX] = POWER_UP
-                invincibilityBlockBlue()
+                print("WARNING!!!")
+                print("WARNING!!!")
+                print("WARNING!!!")
+                #invincibilityBlockBlue()
             
             grid[gridY][gridX] = BLUE_BASE
             
@@ -333,7 +341,10 @@ def homeBases():
             if currTile == POWER_UP: ### If not invincibility block, then put base
                 #grid[gridY][gridX] = POWER_UP 
                 ### Instead of replacing as power_up, replace as grid and place invincibility block someplace else
-                invincibilityBlockRed()
+                print("WARNING!!!")
+                print("WARNING!!!")
+                print("WARNING!!!")
+                #invincibilityBlockRed()
                
             grid[gridY][gridX] = RED_BASE
 
