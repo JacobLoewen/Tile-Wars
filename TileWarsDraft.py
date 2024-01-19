@@ -2,9 +2,7 @@ from asyncio import Event
 import pygame as pg
 from random import randrange
 
-pg.init()
-
-#currSpeed = 8
+pg.init() #May be able to delete
 
 WINDOW = 750
 
@@ -20,7 +18,6 @@ winY: int = int((screenY - 750) / 2)
 TILE_SIZE = 50
 
 ### GRID PLACEHOLDERS:
-#BORDER = -1
 BLANK = 0
 RED_BASE = 1
 BLUE_BASE = 2
@@ -83,8 +80,6 @@ power_iter = 0
 powerCountRed = 0
 powerCountBlue = 0
 
-#food.center = get_random_position()
-
 SCREEN = pg.display.set_mode((screenX, screenY), pg.RESIZABLE)
 
 screenX = WINDOW
@@ -99,7 +94,7 @@ currBlueDir = pg.K_1
 prevSnakeRed = snakeRed.copy()
 prevSnakeBlue = snakeBlue.copy()
 
-idle = 0
+idle = 0 #May be able to delete
 ### idle = 1
 
 ### Colors:
@@ -138,8 +133,6 @@ power_up = (255, 255, 255, 255)
 # blue_two = (13, 70, 36, 255)
 
 # power_up = (255, 255, 255, 255)
-
-
 
 colors = [blank, red_base, blue_base, red_one, blue_one, red_two, blue_two, red_player, blue_player, power_up]
 
@@ -334,6 +327,24 @@ def homeBases():
                 grid[gridY][gridX] = RED_BASE
 
             pg.draw.rect(SCREEN, colors[grid[gridY][gridX]], tile)
+
+def playerCollision():
+    ### Runs if the players are on the
+    ### Same tile
+    
+    global powerCountRed
+    global powerCountBlue
+    
+    if powerCountRed > powerCountBlue:
+        ### Blue respawns after 3 seconds
+        ### And Red's count decreases by
+        ### 1 (for now)
+        powerCountRed -= 1
+    elif powerCountRed < powerCountBlue:
+        ### Red respawns after 3 seconds
+        ### And Blue's count decreases
+        ### by 1 (for now)
+        powerCountBlue -= 1
 
 def drawGrid():
     global TILE_SIZE
@@ -721,6 +732,13 @@ while True:
                 tileColors("Blue")
 
         tuple_add = [snakeBlue.center, snakeBlue_dir]
+
+        ### Compare the two player
+        ### Positions. If they are
+        ### Equal, run playerCollision()
+        ### And then set variable for
+        ### halting movement of defeated
+        ### player for 3 seconds
 
         ### Draw all Front-End components:
         frontEnd()
