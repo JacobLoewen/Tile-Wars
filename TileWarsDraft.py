@@ -358,7 +358,7 @@ def homeBases():
             gridX = int((posX-25)/50)
             gridY = int((posY-25)/50)
             
-            currTile = grid[gridY][gridX]
+            currTile = grid[gridY][gridX] 
             #print("currTile:",currTile," POWER_UP:",POWER_UP,"GridY:",gridY,"GridX:",gridX)
         
             if currTile == POWER_UP: ### If not invincibility block, then put base
