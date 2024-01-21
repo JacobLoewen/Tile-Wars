@@ -59,8 +59,8 @@ redMoveCounter = 0
 blueMoveCounter = 0
 
 ### Increments before loop in move counters, so set default as 1
-redSpeed = 1
-blueSpeed = 1
+redSpeed = 2
+blueSpeed = 2
 
 foodEaten = True
 
@@ -76,7 +76,7 @@ snakeRed_dir = (0, 0)
 snakeBlue_dir = (0, 0)
 
 ### Main function for speed:
-time, time_step = 0, 250
+time, time_step = 0, 125 ### 1/8 of a second
 
 ### Power used as Invincibility Blocks
 power = snakeRed.copy()
@@ -320,10 +320,14 @@ def countPoints():
 
     for line in grid:
         for x in line:
-            if x == 3 or x == 5:
+            if x == 3:
                 redPointsCounter += 1
-            elif x == 4 or x == 6:
+            elif x == 5:
+                redPointsCounter += 2
+            elif x == 4:
                 bluePointsCounter += 1
+            elif x == 6:
+                bluePointsCounter += 2
 
 def homeBases():
     global SCREEN
@@ -420,7 +424,7 @@ def playerCollision():
         ### And Red's count decreases by
         ### 1 (for now)
         snakeBlue.center = (375 + winX, 75 + winY)
-        blueSpeed = 12 ### Wait for 3 seconds
+        blueSpeed = 40 ### Wait for 5 seconds
         blueMoveCounter = 0
         powerCountRed -= 2
     elif powerCountRed < powerCountBlue:
@@ -428,16 +432,16 @@ def playerCollision():
         ### And Blue's count decreases
         ### by 1 (for now)
         snakeRed.center = (375 + winX, 675 + winY)
-        redSpeed = 12
+        redSpeed = 40
         redMoveCounter = 0
         powerCountBlue -= 2
     elif powerCountRed == powerCountBlue:
         ### BOTH respawn after 3 seconds
         snakeRed.center = (375 + winX, 675 + winY)
-        redSpeed = 12
+        redSpeed = 40
         redMoveCounter = 0
         snakeBlue.center = (375 + winX, 75 + winY)
-        blueSpeed = 12
+        blueSpeed = 40
         blueMoveCounter = 0
 
 def drawGrid():
@@ -491,21 +495,21 @@ def speedAlter(player: str):
 
             colorRed = 0
             if currGrid == 0:
-                redSpeed = 3
+                redSpeed = 6
             elif currGrid == 1:
                 redSpeed = 2
             elif currGrid == 3:
-                redSpeed = 3
+                redSpeed = 4
             elif currGrid == 5:
                 redSpeed = 2
             elif currGrid == 4:
-                redSpeed = 3
+                redSpeed = 6
             elif currGrid == 6:
-                redSpeed = 4
+                redSpeed = 8
             elif currGrid == 9:
-                redSpeed = 3
+                redSpeed = 6
         except Exception:
-            redSpeed = 1
+            redSpeed = 2
 
     if player == "Blue":
         ### Get grid of snakeRed currently and then respectively 
@@ -524,21 +528,21 @@ def speedAlter(player: str):
 
             colorBlue = 0
             if currGrid == 0:
-                blueSpeed = 3
+                blueSpeed = 6
             elif currGrid == 2:
                 blueSpeed = 2
             elif currGrid == 4:
-                blueSpeed = 3
+                blueSpeed = 4
             elif currGrid == 6:
                 blueSpeed = 2
             elif currGrid == 3:
-                blueSpeed = 3
+                blueSpeed = 6
             elif currGrid == 5:
-                blueSpeed = 4
+                blueSpeed = 8
             elif currGrid == 9:
-                blueSpeed = 3
+                blueSpeed = 6
         except Exception:
-            blueSpeed = 1
+            blueSpeed = 2
 
 def tileColors(player: str):
     global snakeRed
@@ -572,7 +576,7 @@ def tileColors(player: str):
         elif prevRedGrid == 4:
             colorRed = 0
         elif prevRedGrid == 6:
-            colorRed = 4
+            colorRed = 0
         elif prevRedGrid == 9:
             colorRed = 0
             powerCountRed += 1
@@ -613,7 +617,7 @@ def tileColors(player: str):
         elif prevBlueGrid == 3:
             colorBlue = 0
         elif prevBlueGrid == 5:
-            colorBlue = 3
+            colorBlue = 0
         elif prevBlueGrid == 9:
             colorBlue = 0
             powerCountBlue += 1
