@@ -31,14 +31,16 @@ POWER_UP = 9
 
 # 25, 775, 50
 RANGEX = ((TILE_SIZE // 2) + winX, (WINDOW - TILE_SIZE // 2) + winX + 2, TILE_SIZE) # The '//' function is division but rounds the number down as well (into int format)
+RANGEY = ((TILE_SIZE // 2) + winY, (WINDOW - TILE_SIZE // 2) + winY + 2, TILE_SIZE)
 RANGEYRed = ((TILE_SIZE // 2) + winY + (WINDOW // 2) - 25, (WINDOW - TILE_SIZE // 2) + winY + 2, TILE_SIZE)
 RANGEYBlue = ((TILE_SIZE // 2) + winY, (WINDOW - TILE_SIZE // 2) - (WINDOW // 2) + 25 + winY + 2, TILE_SIZE)
 
 # random.randrange(start, stop[, step]) The ", step" function specifies that within the range from start to stop, it will not get a random
-# number where it does not equal (start + (step * n)), n is an element of integers. For example: For 25, 775, 50, the step is 50, so it will get
+# number where it does not equal (start + (step * n)), n is an eletment of integers. For example: For 25, 775, 50, the step is 50, so it will get
 # random values in the list of 25, 75, 125, 175, 225, ..., 625, 675, 725, and 775. It will never get anything like 320 or 710. 
 # These values represent the CENTER of the tile
 
+get_random_position = lambda: [randrange(*RANGEX), randrange(*RANGEY)]
 get_random_position_red = lambda: [randrange(*RANGEX), randrange(*RANGEYRed)]
 get_random_position_blue = lambda: [randrange(*RANGEX), randrange(*RANGEYBlue)]
 
@@ -148,18 +150,20 @@ def frontEnd():
     SCREEN.fill('black') ### Blanks
     drawTiles() ### Paths
 
-    sideFeatures()
+    #sideFeatures()
 
     power_iter += 1
     ### Start with every 10 seconds and go up from there:
-    if power_iter >= 120: ### 60 seconds * 2 1/2 seconds of time iteration equals 60 half seconds
+    if power_iter >= 90: ### 45 seconds * 2 1/2 seconds of time iteration equals 60 half seconds
     #if power_iter >= 10: ### TEMPORARY
         invincibilityBlockBlue()
         invincibilityBlockRed()
+        invincibilityBlockGeneral()
         power_iter = 0
 
     ### Make 'base' tiles static where the first layer disappears but the player tile does not
     homeBases() ### Bases
+    sideFeatures()
 
     ### Draw Character Tile
     pg.draw.rect(SCREEN, colors[RED_PLAYER], snakeRed) ### Red Player
@@ -285,6 +289,28 @@ def invincibilityBlockBlue():
 
     power_iter = 0
 
+def invincibilityBlockGeneral():
+    global power
+    global colors
+    global power_iter
+
+    power.center = get_random_position()
+    pg.draw.rect(SCREEN, colors[POWER_UP], power)
+
+    ### Add power_up to grid
+    powerX = power.center[0]
+    powerY = power.center[1]
+
+    powerGridX = int((powerX-winX-25)/50)
+    powerGridY = int((powerY-winY-25)/50)
+
+    if grid[powerGridY][powerGridX] == 1 or grid[powerGridY][powerGridX] == 2:
+        invincibilityBlockGeneral()
+    else:
+        grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
+
+    power_iter = 0
+
 def countPoints():
     global redPointsCounter
     global bluePointsCounter
@@ -394,7 +420,7 @@ def playerCollision():
         ### And Red's count decreases by
         ### 1 (for now)
         snakeBlue.center = (375 + winX, 75 + winY)
-        blueSpeed = 12
+        blueSpeed = 12 ### Wait for 3 seconds
         blueMoveCounter = 0
         powerCountRed -= 2
     elif powerCountRed < powerCountBlue:
@@ -686,10 +712,11 @@ while True:
             prevSnakeRed.move_ip(winX-prevWinX, winY-prevWinY)
 
             RANGEX = ((TILE_SIZE // 2) + winX, (WINDOW - TILE_SIZE // 2) + winX + 2, TILE_SIZE) # The '//' function is division but rounds the number down as well (into int format)
+            RANGEY = ((TILE_SIZE // 2) + winY, (WINDOW - TILE_SIZE // 2) + winY + 2, TILE_SIZE)
             RANGEYRed = ((TILE_SIZE // 2) + winY + (WINDOW // 2) - 25, (WINDOW - TILE_SIZE // 2) + winY + 2, TILE_SIZE)
             RANGEYBlue = ((TILE_SIZE // 2) + winY, (WINDOW - TILE_SIZE // 2) - (WINDOW // 2) + 25 + winY + 2, TILE_SIZE)
 
-
+            get_random_position = lambda: [randrange(*RANGEX), randrange(*RANGEY)]
             get_random_position_red = lambda: [randrange(*RANGEX), randrange(*RANGEYRed)]
             get_random_position_blue = lambda: [randrange(*RANGEX), randrange(*RANGEYBlue)]
 
