@@ -31,14 +31,16 @@ POWER_UP = 9
 
 # 25, 775, 50
 RANGEX = ((TILE_SIZE // 2) + winX, (WINDOW - TILE_SIZE // 2) + winX + 2, TILE_SIZE) # The '//' function is division but rounds the number down as well (into int format)
+RANGEY = ((TILE_SIZE // 2) + winY, (WINDOW - TILE_SIZE // 2) + winY + 2, TILE_SIZE)
 RANGEYRed = ((TILE_SIZE // 2) + winY + (WINDOW // 2) - 25, (WINDOW - TILE_SIZE // 2) + winY + 2, TILE_SIZE)
 RANGEYBlue = ((TILE_SIZE // 2) + winY, (WINDOW - TILE_SIZE // 2) - (WINDOW // 2) + 25 + winY + 2, TILE_SIZE)
 
 # random.randrange(start, stop[, step]) The ", step" function specifies that within the range from start to stop, it will not get a random
-# number where it does not equal (start + (step * n)), n is an element of integers. For example: For 25, 775, 50, the step is 50, so it will get
+# number where it does not equal (start + (step * n)), n is an eletment of integers. For example: For 25, 775, 50, the step is 50, so it will get
 # random values in the list of 25, 75, 125, 175, 225, ..., 625, 675, 725, and 775. It will never get anything like 320 or 710. 
 # These values represent the CENTER of the tile
 
+get_random_position = lambda: [randrange(*RANGEX), randrange(*RANGEY)]
 get_random_position_red = lambda: [randrange(*RANGEX), randrange(*RANGEYRed)]
 get_random_position_blue = lambda: [randrange(*RANGEX), randrange(*RANGEYBlue)]
 
@@ -46,6 +48,9 @@ get_random_position_blue = lambda: [randrange(*RANGEX), randrange(*RANGEYBlue)]
 ### positioning -> grid, it will be x = (y - 25)/50 where y is the position number from range (25, 775). 
 ### Creating a border around grid with value -1 for BORDER
 grid = [[BLANK for _ in range((WINDOW) // TILE_SIZE)] for _ in range((WINDOW) // TILE_SIZE)] # deep copy
+
+redPointsCounter = 0
+bluePointsCounter = 0
 
 prevRedGrid = 0
 prevBlueGrid = 0
@@ -145,10 +150,20 @@ def frontEnd():
     SCREEN.fill('black') ### Blanks
     drawTiles() ### Paths
 
-    sideFeatures()
+    #sideFeatures()
+
+    power_iter += 1
+    ### Start with every 10 seconds and go up from there:
+    if power_iter >= 90: ### 45 seconds * 2 1/2 seconds of time iteration equals 60 half seconds
+    #if power_iter >= 10: ### TEMPORARY
+        invincibilityBlockBlue()
+        invincibilityBlockRed()
+        invincibilityBlockGeneral()
+        power_iter = 0
 
     ### Make 'base' tiles static where the first layer disappears but the player tile does not
     homeBases() ### Bases
+    sideFeatures()
 
     ### Draw Character Tile
     pg.draw.rect(SCREEN, colors[RED_PLAYER], snakeRed) ### Red Player
@@ -156,11 +171,12 @@ def frontEnd():
 
     #Could make it be a 'draw character tile' function which takes the parameter of the tile in front and then decides whether it draws it or not
 
-    power_iter += 1
-    ### Start with every 10 seconds and go up from there:
-    if power_iter >= 60: ### 30 seconds * 2 1/2 seconds of time iteration equals 60 half seconds
-        invinciblityBlockBlue()
-        invinciblityBlockRed()
+    # power_iter += 1
+    # ### Start with every 10 seconds and go up from there:
+    # if power_iter >= 60: ### 30 seconds * 2 1/2 seconds of time iteration equals 60 half seconds
+    # #if power_iter >= 10: ### TEMPORARY
+    #     invincibilityBlockBlue()
+    #     invincibilityBlockRed()
     
     ### Draw Grid
     drawGrid()
@@ -187,15 +203,22 @@ def sideFeatures():
     pg.draw.line(SCREEN, colors[RED_TWO], ((winX - 350), (winY)),((winX - 50), (winY)), 15)
     pg.draw.line(SCREEN, colors[RED_TWO], ((winX - 350), (winY + 750)),((winX - 50), (winY + 750)), 15)
 
+    countPoints()
+
     ### Create the font:
     font = pg.font.Font('Questrial-Regular.ttf', 65)
     text_render = font.render("x ", True, (255, 255, 255))
     #text_position = (376, 228)
     text_position = (winX - 209, winY + 63)
     SCREEN.blit(text_render, text_position)
+
     text_render = font.render(str(powerCountRed), True, (255, 255, 255))
     #text_position = (420, 232)
     text_position = (winX - 165, winY + 67)
+    SCREEN.blit(text_render, text_position)
+
+    text_render = font.render(str(redPointsCounter), True, (255, 255, 255))
+    text_position = (winX - 209, winY + 128)
     SCREEN.blit(text_render, text_position)
 
     ### Starting with Blue:
@@ -211,14 +234,20 @@ def sideFeatures():
     #text_position = (1526,228)
     text_position = (winX + 941, winY + 63)
     SCREEN.blit(text_render, text_position)
+
     text_render = font.render(str(powerCountBlue), True, (255, 255, 255))
     #text_position = (1570,232)
     text_position = (winX + 985, winY + 67)
     SCREEN.blit(text_render, text_position)
 
+    text_render = font.render(str(bluePointsCounter), True, (255, 255, 255))
+    #text_position = (1570,232)
+    text_position = (winX + 985, winY + 132)
+    SCREEN.blit(text_render, text_position)
 
 
-def invinciblityBlockRed():
+
+def invincibilityBlockRed():
     global power 
     global colors
     global power_iter
@@ -233,11 +262,12 @@ def invinciblityBlockRed():
     powerGridX = int((powerX-winX-25)/50)
     powerGridY = int((powerY-winY-25)/50)
 
-    grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
+    if grid[powerGridY][powerGridX] == 1:
+        invincibilityBlockRed()
+    else:
+        grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
 
-    power_iter = 0
-
-def invinciblityBlockBlue():
+def invincibilityBlockBlue():
     global power
     global colors
     global power_iter
@@ -252,11 +282,48 @@ def invinciblityBlockBlue():
     powerGridX = int((powerX-winX-25)/50)
     powerGridY = int((powerY-winY-25)/50)
 
-    grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
+    if grid[powerGridY][powerGridX] == 2:
+        invincibilityBlockBlue()
+    else:
+        grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
 
     power_iter = 0
 
+def invincibilityBlockGeneral():
+    global power
+    global colors
+    global power_iter
 
+    power.center = get_random_position()
+    pg.draw.rect(SCREEN, colors[POWER_UP], power)
+
+    ### Add power_up to grid
+    powerX = power.center[0]
+    powerY = power.center[1]
+
+    powerGridX = int((powerX-winX-25)/50)
+    powerGridY = int((powerY-winY-25)/50)
+
+    if grid[powerGridY][powerGridX] == 1 or grid[powerGridY][powerGridX] == 2:
+        invincibilityBlockGeneral()
+    else:
+        grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
+
+    power_iter = 0
+
+def countPoints():
+    global redPointsCounter
+    global bluePointsCounter
+
+    redPointsCounter = 0
+    bluePointsCounter = 0
+
+    for line in grid:
+        for x in line:
+            if x == 3 or x == 5:
+                redPointsCounter += 1
+            elif x == 4 or x == 6:
+                bluePointsCounter += 1
 
 def homeBases():
     global SCREEN
@@ -288,12 +355,16 @@ def homeBases():
             gridY = int((posY-25)/50)
             
             currTile = grid[gridY][gridX]
-            print("currTile:",currTile," POWER_UP:",POWER_UP,"GridY:",gridY,"GridX:",gridX)
+            #print("currTile:",currTile," POWER_UP:",POWER_UP,"GridY:",gridY,"GridX:",gridX)
         
             if currTile == POWER_UP: ### If not invincibility block, then put base
-                grid[gridY][gridX] = POWER_UP
-            else:
-                grid[gridY][gridX] = BLUE_BASE
+                #grid[gridY][gridX] = POWER_UP
+                print("WARNING!!!")
+                print("WARNING!!!")
+                print("WARNING!!!")
+                #invincibilityBlockBlue()
+            
+            grid[gridY][gridX] = BLUE_BASE
             
             pg.draw.rect(SCREEN, colors[grid[gridY][gridX]], tile)
     
@@ -322,9 +393,14 @@ def homeBases():
             
             currTile = grid[gridY][gridX]
             if currTile == POWER_UP: ### If not invincibility block, then put base
-                grid[gridY][gridX] = POWER_UP
-            else:    
-                grid[gridY][gridX] = RED_BASE
+                #grid[gridY][gridX] = POWER_UP 
+                ### Instead of replacing as power_up, replace as grid and place invincibility block someplace else
+                print("WARNING!!!")
+                print("WARNING!!!")
+                print("WARNING!!!")
+                #invincibilityBlockRed()
+               
+            grid[gridY][gridX] = RED_BASE
 
             pg.draw.rect(SCREEN, colors[grid[gridY][gridX]], tile)
 
@@ -334,17 +410,35 @@ def playerCollision():
     
     global powerCountRed
     global powerCountBlue
+    global redSpeed
+    global blueSpeed
+    global redMoveCounter
+    global blueMoveCounter
     
     if powerCountRed > powerCountBlue:
         ### Blue respawns after 3 seconds
         ### And Red's count decreases by
         ### 1 (for now)
-        powerCountRed -= 1
+        snakeBlue.center = (375 + winX, 75 + winY)
+        blueSpeed = 12 ### Wait for 3 seconds
+        blueMoveCounter = 0
+        powerCountRed -= 2
     elif powerCountRed < powerCountBlue:
         ### Red respawns after 3 seconds
         ### And Blue's count decreases
         ### by 1 (for now)
-        powerCountBlue -= 1
+        snakeRed.center = (375 + winX, 675 + winY)
+        redSpeed = 12
+        redMoveCounter = 0
+        powerCountBlue -= 2
+    elif powerCountRed == powerCountBlue:
+        ### BOTH respawn after 3 seconds
+        snakeRed.center = (375 + winX, 675 + winY)
+        redSpeed = 12
+        redMoveCounter = 0
+        snakeBlue.center = (375 + winX, 75 + winY)
+        blueSpeed = 12
+        blueMoveCounter = 0
 
 def drawGrid():
     global TILE_SIZE
@@ -373,53 +467,78 @@ def drawTiles():
             rect = pg.Rect(pixelX, pixelY, TILE_SIZE, TILE_SIZE)
             pg.draw.rect(SCREEN, colors[grid[y][x]], rect)
 
-def nextTile():
+def speedAlter(player: str):
     global snakeRed
     global snakeBlue
-    global snakeRed_dir
-    global snakeBlue_dir
     global redSpeed
     global blueSpeed
 
-    ### Get grid of snakeRed currently and then respectively 
-    ### increment to wherever shows the next tile
-    snakeRedX = snakeRed.center[0]
-    snakeRedY = snakeRed.center[1]
+    if player == "Red":
 
-    ### Grid may go out of bounds. If this is the case, return
-    ### 1 as the speed.
-    try:
-        gridRedX = int((snakeRedX-winX-25 + snakeRed_dir[0])/50)
-        gridRedY = int((snakeRedY-winY-25 + snakeRed_dir[1])/50)
-    except Exception:
-        redSpeed = 1
-    
-    colorRed = 0
-    if prevRedGrid == 0:
-        colorRed = 3
-        redSpeed = 3
-    elif prevRedGrid == 1:
-        colorRed = 1
-        redSpeed = 2
-    elif prevRedGrid == 3:
-        colorRed = 5
-        redSpeed = 3
-    elif prevRedGrid == 5:
-        colorRed = 5
-        redSpeed = 2
-    elif prevRedGrid == 4:
-        colorRed = 0
-        redSpeed = 3
-    elif prevRedGrid == 6:
-        colorRed = 4
-        redSpeed = 4
-    elif prevRedGrid == 9:
-        colorRed = 0
-        redSpeed = 3
-        powerCountRed += 1
+        ### Get grid of snakeRed currently and then respectively 
+        ### increment to wherever shows the next tile
+        snakeRedX = snakeRed.center[0]
+        snakeRedY = snakeRed.center[1]
 
+        ### Grid may go out of bounds. If this is the case, return
+        ### 1 as the speed.
+        try:
+            # gridRedX = int((snakeRedX-winX-25 + snakeRed_dir[0])/50)
+            # gridRedY = int((snakeRedY-winY-25 + snakeRed_dir[1])/50)
+            gridRedX = int((snakeRedX-winX-25)/50)
+            gridRedY = int((snakeRedY-winY-25)/50)
+            currGrid = grid[gridRedY][gridRedX]
 
+            colorRed = 0
+            if currGrid == 0:
+                redSpeed = 3
+            elif currGrid == 1:
+                redSpeed = 2
+            elif currGrid == 3:
+                redSpeed = 3
+            elif currGrid == 5:
+                redSpeed = 2
+            elif currGrid == 4:
+                redSpeed = 3
+            elif currGrid == 6:
+                redSpeed = 4
+            elif currGrid == 9:
+                redSpeed = 3
+        except Exception:
+            redSpeed = 1
 
+    if player == "Blue":
+        ### Get grid of snakeRed currently and then respectively 
+        ### increment to wherever shows the next tile
+        snakeBlueX = snakeBlue.center[0]
+        snakeBlueY = snakeBlue.center[1]
+
+        ### Grid may go out of bounds. If this is the case, return
+        ### 1 as the speed.
+        try:
+            # gridRedX = int((snakeRedX-winX-25 + snakeRed_dir[0])/50)
+            # gridRedY = int((snakeRedY-winY-25 + snakeRed_dir[1])/50)
+            gridBlueX = int((snakeBlueX-winX-25)/50)
+            gridBlueY = int((snakeBlueY-winY-25)/50)
+            currGrid = grid[gridBlueY][gridBlueX]
+
+            colorBlue = 0
+            if currGrid == 0:
+                blueSpeed = 3
+            elif currGrid == 2:
+                blueSpeed = 2
+            elif currGrid == 4:
+                blueSpeed = 3
+            elif currGrid == 6:
+                blueSpeed = 2
+            elif currGrid == 3:
+                blueSpeed = 3
+            elif currGrid == 5:
+                blueSpeed = 4
+            elif currGrid == 9:
+                blueSpeed = 3
+        except Exception:
+            blueSpeed = 1
 
 def tileColors(player: str):
     global snakeRed
@@ -439,34 +558,23 @@ def tileColors(player: str):
         gridRedX = int((snakeRedX-winX-25)/50)
         gridRedY = int((snakeRedY-winY-25)/50)
 
-        # try:
-        #     gridRedX = int((snakeRedX-winX-25 + snakeRed_dir[0])/50)
-        #     gridRedY = int((snakeRedY-winY-25 + snakeRed_dir[1])/50)
-        # except Exception:
-        #     redSpeed = 1
+        speedAlter(player)
 
         colorRed = 0
         if prevRedGrid == 0:
             colorRed = 3
-            redSpeed = 3
         elif prevRedGrid == 1:
             colorRed = 1
-            redSpeed = 2
         elif prevRedGrid == 3:
             colorRed = 5
-            redSpeed = 3
         elif prevRedGrid == 5:
             colorRed = 5
-            redSpeed = 2
         elif prevRedGrid == 4:
             colorRed = 0
-            redSpeed = 3
         elif prevRedGrid == 6:
             colorRed = 4
-            redSpeed = 4
         elif prevRedGrid == 9:
             colorRed = 0
-            redSpeed = 3
             powerCountRed += 1
 
         pg.draw.rect(SCREEN, colors[colorRed], prevSnakeRed)
@@ -493,6 +601,8 @@ def tileColors(player: str):
         gridBlueX = int((snakeBlueX-winX-25)/50)
         gridBlueY = int((snakeBlueY-winY-25)/50)
 
+        speedAlter(player)
+
         colorBlue = 0
         if prevBlueGrid == 0:
             colorBlue = 4
@@ -518,7 +628,6 @@ def tileColors(player: str):
         prevBlueGridY = int((prevSnakeBlueY-winY-25)/50)
 
         grid[prevBlueGridY][prevBlueGridX] = colorBlue ### Set the color of the PREVIOUS snakeRed
-
         
         prevBlueGrid = grid[gridBlueY][gridBlueX] ### Get color of tile that snakeBlue is now on
 
@@ -533,12 +642,12 @@ while True:
         if event.type == pg.QUIT:
             exit()
         if event.type == pg.KEYDOWN:
-            for i in grid:
-                print(i)
-            print("powerCountRed:",powerCountRed)
-            print("powerCountBlue:",powerCountBlue)
-            print("left: " + str(snakeRed.left) + ", right: " + str(snakeRed.right) + ".")
-            print("top: " + str(snakeRed.top) + ", bottom: " + str(snakeRed.bottom) + ".")
+            #for i in grid:
+            #    print(i)
+            #print("powerCountRed:",powerCountRed)
+            #print("powerCountBlue:",powerCountBlue)
+            #print("left: " + str(snakeRed.left) + ", right: " + str(snakeRed.right) + ".")
+            #print("top: " + str(snakeRed.top) + ", bottom: " + str(snakeRed.bottom) + ".")
 
             ### Red Player
             if event.key == pg.K_w:
@@ -565,12 +674,6 @@ while True:
                     currRedDir = event.key
                     idle = 0 
 
-            #elif snakeRed.left - 2 < 0 or snakeRed.right + 2 > WINDOW or snakeRed.top - 2 < 0 or snakeRed.bottom + 2 > WINDOW:
-            #    idle = 1
-            #    print("IDLE IS 1: " + str(idle))
-
-            
-
             ### Blue Player:
             if event.key == pg.K_UP:
                 if not (snakeBlue.top - 2 < winY):
@@ -596,9 +699,6 @@ while True:
                     currBlueDir = event.key
                     idle = 0 
 
-            #elif snakeBlue.left - 2 < 0 or snakeBlue.right + 2 > WINDOW or snakeBlue.top - 2 < 0 or snakeBlue.bottom + 2 > WINDOW:
-                #idle = 1
-                #print("IDLE IS 1: " + str(idle))
 
         if event.type == pg.VIDEORESIZE:
             screenX = event.w
@@ -612,10 +712,11 @@ while True:
             prevSnakeRed.move_ip(winX-prevWinX, winY-prevWinY)
 
             RANGEX = ((TILE_SIZE // 2) + winX, (WINDOW - TILE_SIZE // 2) + winX + 2, TILE_SIZE) # The '//' function is division but rounds the number down as well (into int format)
+            RANGEY = ((TILE_SIZE // 2) + winY, (WINDOW - TILE_SIZE // 2) + winY + 2, TILE_SIZE)
             RANGEYRed = ((TILE_SIZE // 2) + winY + (WINDOW // 2) - 25, (WINDOW - TILE_SIZE // 2) + winY + 2, TILE_SIZE)
             RANGEYBlue = ((TILE_SIZE // 2) + winY, (WINDOW - TILE_SIZE // 2) - (WINDOW // 2) + 25 + winY + 2, TILE_SIZE)
 
-
+            get_random_position = lambda: [randrange(*RANGEX), randrange(*RANGEY)]
             get_random_position_red = lambda: [randrange(*RANGEX), randrange(*RANGEYRed)]
             get_random_position_blue = lambda: [randrange(*RANGEX), randrange(*RANGEYBlue)]
 
@@ -644,7 +745,7 @@ while True:
         gridRedX = int((snakeRedX-winX-25)/50)
         gridRedY = int((snakeRedY-winY-25)/50)
 
-        print("idle:",idle)
+        #print("idle:",idle)
 
         if idle == 0:
             if currRedDir == pg.K_w:
@@ -660,9 +761,9 @@ while True:
                 snakeRed_dir = (TILE_SIZE, 0)
                 dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 0, pg.K_d: 1}
 
-        print("winX:",winX,"winX + WINDOW:",winX + WINDOW)
-        print("winY:",winY,"winY + WINDOW:",winY + WINDOW)
-        print(dirsRed)
+        #print("winX:",winX,"winX + WINDOW:",winX + WINDOW)
+        #print("winY:",winY,"winY + WINDOW:",winY + WINDOW)
+        #print(dirsRed)
 
         if (snakeRed.left - 2 < winX or grid[gridRedY][gridRedX - 1] == BLUE_BASE) and dirsRed[pg.K_d] == 0:
             print("Can no longer go left")
@@ -720,7 +821,7 @@ while True:
         else:
             prevSnakeBlue = snakeBlue.copy()
             blueMoveCounter += 1
-            if blueMoveCounter == 2:
+            if blueMoveCounter == blueSpeed:
                 snakeBlue.move_ip(snakeBlue_dir)
                 blueMoveCounter = 0
                 tileColors("Blue")
@@ -730,6 +831,30 @@ while True:
         ### Compare the two player
         ### Positions. If they are
         ### Equal, run playerCollision()
+
+        snakeRedX = snakeRed.center[0]
+        snakeRedY = snakeRed.center[1]
+
+        snakeBlueX = snakeBlue.center[0]
+        snakeBlueY = snakeBlue.center[1]
+
+        gridRedX = int((snakeRedX-winX-25)/50)
+        gridRedY = int((snakeRedY-winY-25)/50)
+
+        #gridRed = grid[gridRedY][gridRedX]
+
+
+        gridBlueX = int((snakeBlueX-winX-25)/50)
+        gridBlueY = int((snakeBlueY-winY-25)/50)
+
+        #gridBlue = grid[gridBlueY][gridBlueX]
+
+        print("gridRedY:",gridRedY,"girdBlueY",gridBlueY)
+        print("gridRedX:",gridRedX,"gridBlueX",gridBlueX)
+        if gridRedY == gridBlueY and gridRedX == gridBlueX:
+            playerCollision()
+            print("Player Collision!!!")
+
         ### And then set variable for
         ### halting movement of defeated
         ### player for 3 seconds
