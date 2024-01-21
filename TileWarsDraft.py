@@ -47,6 +47,9 @@ get_random_position_blue = lambda: [randrange(*RANGEX), randrange(*RANGEYBlue)]
 ### Creating a border around grid with value -1 for BORDER
 grid = [[BLANK for _ in range((WINDOW) // TILE_SIZE)] for _ in range((WINDOW) // TILE_SIZE)] # deep copy
 
+redPointsCounter = 0
+bluePointsCounter = 0
+
 prevRedGrid = 0
 prevBlueGrid = 0
 
@@ -149,7 +152,7 @@ def frontEnd():
 
     power_iter += 1
     ### Start with every 10 seconds and go up from there:
-    if power_iter >= 60: ### 30 seconds * 2 1/2 seconds of time iteration equals 60 half seconds
+    if power_iter >= 120: ### 60 seconds * 2 1/2 seconds of time iteration equals 60 half seconds
     #if power_iter >= 10: ### TEMPORARY
         invincibilityBlockBlue()
         invincibilityBlockRed()
@@ -196,15 +199,22 @@ def sideFeatures():
     pg.draw.line(SCREEN, colors[RED_TWO], ((winX - 350), (winY)),((winX - 50), (winY)), 15)
     pg.draw.line(SCREEN, colors[RED_TWO], ((winX - 350), (winY + 750)),((winX - 50), (winY + 750)), 15)
 
+    countPoints()
+
     ### Create the font:
     font = pg.font.Font('Questrial-Regular.ttf', 65)
     text_render = font.render("x ", True, (255, 255, 255))
     #text_position = (376, 228)
     text_position = (winX - 209, winY + 63)
     SCREEN.blit(text_render, text_position)
+
     text_render = font.render(str(powerCountRed), True, (255, 255, 255))
     #text_position = (420, 232)
     text_position = (winX - 165, winY + 67)
+    SCREEN.blit(text_render, text_position)
+
+    text_render = font.render(str(redPointsCounter), True, (255, 255, 255))
+    text_position = (winX - 209, winY + 128)
     SCREEN.blit(text_render, text_position)
 
     ### Starting with Blue:
@@ -220,9 +230,15 @@ def sideFeatures():
     #text_position = (1526,228)
     text_position = (winX + 941, winY + 63)
     SCREEN.blit(text_render, text_position)
+
     text_render = font.render(str(powerCountBlue), True, (255, 255, 255))
     #text_position = (1570,232)
     text_position = (winX + 985, winY + 67)
+    SCREEN.blit(text_render, text_position)
+
+    text_render = font.render(str(bluePointsCounter), True, (255, 255, 255))
+    #text_position = (1570,232)
+    text_position = (winX + 985, winY + 132)
     SCREEN.blit(text_render, text_position)
 
 
@@ -269,7 +285,19 @@ def invincibilityBlockBlue():
 
     power_iter = 0
 
+def countPoints():
+    global redPointsCounter
+    global bluePointsCounter
 
+    redPointsCounter = 0
+    bluePointsCounter = 0
+
+    for line in grid:
+        for x in line:
+            if x == 3 or x == 5:
+                redPointsCounter += 1
+            elif x == 4 or x == 6:
+                bluePointsCounter += 1
 
 def homeBases():
     global SCREEN
@@ -368,7 +396,7 @@ def playerCollision():
         snakeBlue.center = (375 + winX, 75 + winY)
         blueSpeed = 12
         blueMoveCounter = 0
-        powerCountRed -= 1
+        powerCountRed -= 2
     elif powerCountRed < powerCountBlue:
         ### Red respawns after 3 seconds
         ### And Blue's count decreases
@@ -376,7 +404,15 @@ def playerCollision():
         snakeRed.center = (375 + winX, 675 + winY)
         redSpeed = 12
         redMoveCounter = 0
-        powerCountBlue -= 1
+        powerCountBlue -= 2
+    elif powerCountRed == powerCountBlue:
+        ### BOTH respawn after 3 seconds
+        snakeRed.center = (375 + winX, 675 + winY)
+        redSpeed = 12
+        redMoveCounter = 0
+        snakeBlue.center = (375 + winX, 75 + winY)
+        blueSpeed = 12
+        blueMoveCounter = 0
 
 def drawGrid():
     global TILE_SIZE
