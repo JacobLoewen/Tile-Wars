@@ -1,6 +1,7 @@
 from asyncio import Event
 import pygame as pg
 from random import randrange
+from random import randint
 
 pg.init() #May be able to delete
 
@@ -28,6 +29,7 @@ BLUE_TWO = 6
 RED_PLAYER = 7
 BLUE_PLAYER = 8
 POWER_UP = 9
+ULTRA_POWER_UP = 10
 
 # 25, 775, 50
 RANGEX = ((TILE_SIZE // 2) + winX, (WINDOW - TILE_SIZE // 2) + winX + 2, TILE_SIZE) # The '//' function is division but rounds the number down as well (into int format)
@@ -48,6 +50,9 @@ get_random_position_blue = lambda: [randrange(*RANGEX), randrange(*RANGEYBlue)]
 ### positioning -> grid, it will be x = (y - 25)/50 where y is the position number from range (25, 775). 
 ### Creating a border around grid with value -1 for BORDER
 grid = [[BLANK for _ in range((WINDOW) // TILE_SIZE)] for _ in range((WINDOW) // TILE_SIZE)] # deep copy
+
+redPowerToggle = False
+bluePowerToggle = False
 
 redPointsCounter = 0
 bluePointsCounter = 0
@@ -80,6 +85,7 @@ time, time_step = 0, 125 ### 1/8 of a second
 
 ### Power used as Invincibility Blocks
 power = snakeRed.copy()
+ultraPower = snakeRed.copy()
 power_iter = 0
 
 powerCountRed = 0
@@ -119,6 +125,7 @@ red_two = (153, 0, 0, 255)
 blue_two = (0, 0, 153, 255)
 
 power_up = (255, 255, 255, 255)
+ultra_power_up = (225, 215, 0, 255)
 
 
 ### Oli's color codes
@@ -139,7 +146,7 @@ power_up = (255, 255, 255, 255)
 
 # power_up = (255, 255, 255, 255)
 
-colors = [blank, red_base, blue_base, red_one, blue_one, red_two, blue_two, red_player, blue_player, power_up]
+colors = [blank, red_base, blue_base, red_one, blue_one, red_two, blue_two, red_player, blue_player, power_up, ultra_power_up]
 
 def frontEnd():
     global snakeRed
@@ -293,21 +300,41 @@ def invincibilityBlockGeneral():
     global power
     global colors
     global power_iter
+    global ultraPower
 
-    power.center = get_random_position()
-    pg.draw.rect(SCREEN, colors[POWER_UP], power)
 
-    ### Add power_up to grid
-    powerX = power.center[0]
-    powerY = power.center[1]
+    randomNum = randint(1, 2)
+    if randomNum == 1:
+        ultraPower.center = get_random_position()
+        pg.draw.rect(SCREEN, colors[ULTRA_POWER_UP], ultraPower)
 
-    powerGridX = int((powerX-winX-25)/50)
-    powerGridY = int((powerY-winY-25)/50)
+        ### Add power_up to grid
+        powerX = ultraPower.center[0]
+        powerY = ultraPower.center[1]
 
-    if grid[powerGridY][powerGridX] == 1 or grid[powerGridY][powerGridX] == 2:
-        invincibilityBlockGeneral()
+        powerGridX = int((powerX-winX-25)/50)
+        powerGridY = int((powerY-winY-25)/50)
+
+        if grid[powerGridY][powerGridX] == 1 or grid[powerGridY][powerGridX] == 2:
+            invincibilityBlockGeneral()
+        else:
+            grid[powerGridY][powerGridX] = ULTRA_POWER_UP ### Set the color to white for POWER_UP
+
     else:
-        grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
+        power.center = get_random_position()
+        pg.draw.rect(SCREEN, colors[POWER_UP], power)
+
+        ### Add power_up to grid
+        powerX = power.center[0]
+        powerY = power.center[1]
+
+        powerGridX = int((powerX-winX-25)/50)
+        powerGridY = int((powerY-winY-25)/50)
+
+        if grid[powerGridY][powerGridX] == 1 or grid[powerGridY][powerGridX] == 2:
+            invincibilityBlockGeneral()
+        else:
+            grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
 
     power_iter = 0
 
@@ -359,7 +386,6 @@ def homeBases():
             gridY = int((posY-25)/50)
             
             currTile = grid[gridY][gridX] 
-            #print("currTile:",currTile," POWER_UP:",POWER_UP,"GridY:",gridY,"GridX:",gridX)
         
             if currTile == POWER_UP: ### If not invincibility block, then put base
                 #grid[gridY][gridX] = POWER_UP
@@ -418,8 +444,37 @@ def playerCollision():
     global blueSpeed
     global redMoveCounter
     global blueMoveCounter
-    
-    if powerCountRed > powerCountBlue:
+
+    ### OLD Collision Method
+    #     
+    # if powerCountRed > powerCountBlue:
+    #     ### Blue respawns after 3 seconds
+    #     ### And Red's count decreases by
+    #     ### 1 (for now)
+    #     snakeBlue.center = (375 + winX, 75 + winY)
+    #     blueSpeed = 40 ### Wait for 5 seconds
+    #     blueMoveCounter = 0
+    #     powerCountRed -= 2
+    # elif powerCountRed < powerCountBlue:
+    #     ### Red respawns after 3 seconds
+    #     ### And Blue's count decreases
+    #     ### by 1 (for now)
+    #     snakeRed.center = (375 + winX, 675 + winY)
+    #     redSpeed = 40
+    #     redMoveCounter = 0
+    #     powerCountBlue -= 2
+    # elif powerCountRed == powerCountBlue:
+    #     ### BOTH respawn after 3 seconds
+    #     snakeRed.center = (375 + winX, 675 + winY)
+    #     redSpeed = 40
+    #     redMoveCounter = 0
+    #     snakeBlue.center = (375 + winX, 75 + winY)
+    #     blueSpeed = 40
+    #     blueMoveCounter = 0
+
+    ### New Collision Method
+    # Winner will respawn upon collision
+    if redPointsCounter < bluePointsCounter:
         ### Blue respawns after 3 seconds
         ### And Red's count decreases by
         ### 1 (for now)
@@ -427,7 +482,7 @@ def playerCollision():
         blueSpeed = 40 ### Wait for 5 seconds
         blueMoveCounter = 0
         powerCountRed -= 2
-    elif powerCountRed < powerCountBlue:
+    elif redPointsCounter > bluePointsCounter:
         ### Red respawns after 3 seconds
         ### And Blue's count decreases
         ### by 1 (for now)
@@ -435,7 +490,7 @@ def playerCollision():
         redSpeed = 40
         redMoveCounter = 0
         powerCountBlue -= 2
-    elif powerCountRed == powerCountBlue:
+    elif redPointsCounter == bluePointsCounter:
         ### BOTH respawn after 3 seconds
         snakeRed.center = (375 + winX, 675 + winY)
         redSpeed = 40
@@ -443,6 +498,7 @@ def playerCollision():
         snakeBlue.center = (375 + winX, 75 + winY)
         blueSpeed = 40
         blueMoveCounter = 0
+    
 
 def drawGrid():
     global TILE_SIZE
@@ -645,7 +701,10 @@ while True:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             exit()
-        if event.type == pg.KEYDOWN:
+        if event.type == pg.KEYUP:
+            if event.key == pg.K_c:
+                redPowerToggle = True
+        elif event.type == pg.KEYDOWN:
             #for i in grid:
             #    print(i)
             #print("powerCountRed:",powerCountRed)
@@ -654,26 +713,40 @@ while True:
             #print("top: " + str(snakeRed.top) + ", bottom: " + str(snakeRed.bottom) + ".")
 
             ### Red Player
+
+            ### Power-Up Usage
+            if event.key == pg.K_c:
+                redPowerToggle = False
+
+            ### Movement
             if event.key == pg.K_w:
-                if not (snakeRed.top - 2 < winY):
+                if redPowerToggle:
+
+                elif not (snakeRed.top - 2 < winY):
                     snakeRed_dir = (0, -TILE_SIZE)
                     currRedDir = event.key
                     idle = 0   
 
             elif event.key == pg.K_s:
-                if not (snakeRed.bottom + 2 > WINDOW + winY):
+                if redPowerToggle:
+
+                elif not (snakeRed.bottom + 2 > WINDOW + winY):
                     snakeRed_dir = (0, TILE_SIZE)
                     currRedDir = event.key
                     idle = 0 
 
             elif event.key == pg.K_a:
-                if not (snakeRed.left - 2 < winX):
+                if redPowerToggle:
+
+                elif not (snakeRed.left - 2 < winX):
                     snakeRed_dir = (-TILE_SIZE, 0)
                     currRedDir = event.key
                     idle = 0 
 
             elif event.key == pg.K_d:
-                if not (snakeRed.right + 2 > WINDOW + winX):
+                if redPowerToggle:
+
+                elif not (snakeRed.right + 2 > WINDOW + winX):
                     snakeRed_dir = (TILE_SIZE, 0)
                     currRedDir = event.key
                     idle = 0 
@@ -853,8 +926,8 @@ while True:
 
         #gridBlue = grid[gridBlueY][gridBlueX]
 
-        print("gridRedY:",gridRedY,"girdBlueY",gridBlueY)
-        print("gridRedX:",gridRedX,"gridBlueX",gridBlueX)
+        #print("gridRedY:",gridRedY,"girdBlueY",gridBlueY)
+        #print("gridRedX:",gridRedX,"gridBlueX",gridBlueX)
         if gridRedY == gridBlueY and gridRedX == gridBlueX:
             playerCollision()
             print("Player Collision!!!")
