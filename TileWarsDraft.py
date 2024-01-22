@@ -721,7 +721,7 @@ while True:
             ### Movement
             if event.key == pg.K_w:
                 if redPowerToggle:
-
+                    print("W Power-Up")
                 elif not (snakeRed.top - 2 < winY):
                     snakeRed_dir = (0, -TILE_SIZE)
                     currRedDir = event.key
@@ -729,7 +729,7 @@ while True:
 
             elif event.key == pg.K_s:
                 if redPowerToggle:
-
+                    print("S Power-Up")
                 elif not (snakeRed.bottom + 2 > WINDOW + winY):
                     snakeRed_dir = (0, TILE_SIZE)
                     currRedDir = event.key
@@ -737,7 +737,7 @@ while True:
 
             elif event.key == pg.K_a:
                 if redPowerToggle:
-
+                    print("A Power-Up")
                 elif not (snakeRed.left - 2 < winX):
                     snakeRed_dir = (-TILE_SIZE, 0)
                     currRedDir = event.key
@@ -745,7 +745,7 @@ while True:
 
             elif event.key == pg.K_d:
                 if redPowerToggle:
-
+                    print("D Power-Up")
                 elif not (snakeRed.right + 2 > WINDOW + winX):
                     snakeRed_dir = (TILE_SIZE, 0)
                     currRedDir = event.key
