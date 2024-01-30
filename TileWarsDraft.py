@@ -18,6 +18,8 @@ winY: int = int((screenY - 750) / 2)
 
 TILE_SIZE = 50
 
+POINTS_MAX = 5
+
 ### GRID PLACEHOLDERS:
 BLANK = 0
 RED_BASE = 1
@@ -66,6 +68,12 @@ blueMoveCounter = 0
 ### Increments before loop in move counters, so set default as 1
 redSpeed = 2
 blueSpeed = 2
+
+redSpeedDivider  = 1
+blueSpeedDivider  = 1
+
+redSpeedDividerIter = 0
+blueSpeedDividerIter = 0
 
 foodEaten = True
 
@@ -192,6 +200,7 @@ def sideFeatures():
     global snakeRed
     global powerCountRed
     global powerCountBlue
+    global POINTS_MAX
 
     redPowerCounterTile = snakeRed.copy()
     bluePowerCounterTile = snakeRed.copy()
@@ -219,6 +228,9 @@ def sideFeatures():
     text_position = (winX - 209, winY + 63)
     SCREEN.blit(text_render, text_position)
 
+    if powerCountRed > POINTS_MAX:
+        powerCountRed = POINTS_MAX
+
     text_render = font.render(str(powerCountRed), True, (255, 255, 255))
     #text_position = (420, 232)
     text_position = (winX - 165, winY + 67)
@@ -241,6 +253,9 @@ def sideFeatures():
     #text_position = (1526,228)
     text_position = (winX + 941, winY + 63)
     SCREEN.blit(text_render, text_position)
+
+    if powerCountBlue > POINTS_MAX:
+        powerCountBlue = POINTS_MAX
 
     text_render = font.render(str(powerCountBlue), True, (255, 255, 255))
     #text_position = (1570,232)
@@ -444,6 +459,8 @@ def playerCollision():
     global blueSpeed
     global redMoveCounter
     global blueMoveCounter
+    global redSpeedDivider 
+    global blueSpeedDivider 
 
     ### OLD Collision Method
     #     
@@ -483,7 +500,7 @@ def playerCollision():
         blueMoveCounter = 0
         powerCountRed -= 2
     elif redPointsCounter > bluePointsCounter:
-        ### Red respawns after 3 seconds
+        ### Red respawns after 5 seconds
         ### And Blue's count decreases
         ### by 1 (for now)
         snakeRed.center = (375 + winX, 675 + winY)
@@ -491,7 +508,7 @@ def playerCollision():
         redMoveCounter = 0
         powerCountBlue -= 2
     elif redPointsCounter == bluePointsCounter:
-        ### BOTH respawn after 3 seconds
+        ### BOTH respawn after 5 seconds
         snakeRed.center = (375 + winX, 675 + winY)
         redSpeed = 40
         redMoveCounter = 0
@@ -527,11 +544,58 @@ def drawTiles():
             rect = pg.Rect(pixelX, pixelY, TILE_SIZE, TILE_SIZE)
             pg.draw.rect(SCREEN, colors[grid[y][x]], rect)
 
+def squareGrid(player: str):
+    global snakeRed
+    global snakeBlue
+
+    print("Function Runs!")
+
+    if player == "Red":
+
+        print("RED PLAYER SQUAREGRID")
+
+        snakeRedX = snakeRed.center[0]
+        snakeRedY = snakeRed.center[1]
+
+        try:
+            # gridRedX = int((snakeRedX-winX-25 + snakeRed_dir[0])/50)
+            # gridRedY = int((snakeRedY-winY-25 + snakeRed_dir[1])/50)
+            gridRedX = int((snakeRedX-winX-25)/50)
+            gridRedY = int((snakeRedY-winY-25)/50)
+
+            for i in range(gridRedX - 2, gridRedX + 2):
+                for j in range(gridRedY - 2, gridRedY + 2):
+                    currGrid = grid[j][i]
+
+                    print("Function Runs",(i*j)+1,"times")
+
+                    if currGrid == 0:
+                        currGrid = 3 
+                    elif currGrid == 1:
+                        currGrid = 1
+                    elif currGrid == 3:
+                        currGrid = 5
+                    elif currGrid == 5:
+                        currGrid = 5
+                    elif currGrid == 4:
+                        currGrid = 0
+                    elif currGrid == 6:
+                        currGrid = 4
+                    elif currGrid == 9:
+                        currGrid = 0
+                        powerCountRed += 1
+        except Exception:
+            print("Out of bounds!")
+
+
+
 def speedAlter(player: str):
     global snakeRed
     global snakeBlue
     global redSpeed
     global blueSpeed
+    global redSpeedDivider 
+    global blueSpeedDivider 
 
     if player == "Red":
 
@@ -551,21 +615,23 @@ def speedAlter(player: str):
 
             colorRed = 0
             if currGrid == 0:
-                redSpeed = 6
+                redSpeed = 6 / redSpeedDivider 
             elif currGrid == 1:
-                redSpeed = 2
+                redSpeed = 2 / redSpeedDivider 
             elif currGrid == 3:
-                redSpeed = 4
+                redSpeed = 4 / redSpeedDivider 
             elif currGrid == 5:
-                redSpeed = 2
+                redSpeed = 2 / redSpeedDivider 
             elif currGrid == 4:
-                redSpeed = 6
+                redSpeed = 6 / redSpeedDivider 
             elif currGrid == 6:
-                redSpeed = 8
+                redSpeed = 8 / redSpeedDivider 
             elif currGrid == 9:
-                redSpeed = 6
+                redSpeed = 6 / redSpeedDivider 
+            elif currGrid == 10:
+                redSpeed = 10 / redSpeedDivider
         except Exception:
-            redSpeed = 2
+            redSpeed = 2 / redSpeedDivider 
 
     if player == "Blue":
         ### Get grid of snakeRed currently and then respectively 
@@ -584,21 +650,23 @@ def speedAlter(player: str):
 
             colorBlue = 0
             if currGrid == 0:
-                blueSpeed = 6
+                blueSpeed = 6 / blueSpeedDivider 
             elif currGrid == 2:
-                blueSpeed = 2
+                blueSpeed = 2 / blueSpeedDivider 
             elif currGrid == 4:
-                blueSpeed = 4
+                blueSpeed = 4 / blueSpeedDivider 
             elif currGrid == 6:
-                blueSpeed = 2
+                blueSpeed = 2 / blueSpeedDivider 
             elif currGrid == 3:
-                blueSpeed = 6
+                blueSpeed = 6 / blueSpeedDivider 
             elif currGrid == 5:
-                blueSpeed = 8
+                blueSpeed = 8 / blueSpeedDivider 
             elif currGrid == 9:
-                blueSpeed = 6
+                blueSpeed = 6 / blueSpeedDivider 
+            elif currGrid == 10:
+                blueSpeed = 10 / blueSpeedDivider
         except Exception:
-            blueSpeed = 2
+            blueSpeed = 2 / blueSpeedDivider 
 
 def tileColors(player: str):
     global snakeRed
@@ -636,6 +704,9 @@ def tileColors(player: str):
         elif prevRedGrid == 9:
             colorRed = 0
             powerCountRed += 1
+        elif prevRedGrid == 10:
+            colorRed = 0
+            powerCountRed += 3
 
         pg.draw.rect(SCREEN, colors[colorRed], prevSnakeRed)
 
@@ -677,6 +748,9 @@ def tileColors(player: str):
         elif prevBlueGrid == 9:
             colorBlue = 0
             powerCountBlue += 1
+        elif prevBlueGrid == 10:
+            colorBlue = 0
+            powerCountBlue += 3
 
         pg.draw.rect(SCREEN, colors[colorBlue], prevSnakeBlue)
 
@@ -703,7 +777,9 @@ while True:
             exit()
         if event.type == pg.KEYUP:
             if event.key == pg.K_c:
-                redPowerToggle = True
+                redPowerToggle = False
+            elif event.key == pg.K_m:
+                bluePowerToggle = False
         elif event.type == pg.KEYDOWN:
             #for i in grid:
             #    print(i)
@@ -716,12 +792,17 @@ while True:
 
             ### Power-Up Usage
             if event.key == pg.K_c:
-                redPowerToggle = False
+                redPowerToggle = True
+            if event.key == pg.K_m:
+                bluePowerToggle = True
 
             ### Movement
             if event.key == pg.K_w:
                 if redPowerToggle:
-                    print("W Power-Up")
+                    if powerCountRed >= 3:
+                        redSpeedDivider = 2
+                        powerCountRed -= 3
+                        print("W Power-Up")
                 elif not (snakeRed.top - 2 < winY):
                     snakeRed_dir = (0, -TILE_SIZE)
                     currRedDir = event.key
@@ -753,25 +834,36 @@ while True:
 
             ### Blue Player:
             if event.key == pg.K_UP:
-                if not (snakeBlue.top - 2 < winY):
+                if bluePowerToggle:
+                    if powerCountBlue >= 3:
+                        powerCountBlue -= 3
+                        blueSpeedDivider = 2
+                        print("UP Power-Up")
+                elif not (snakeBlue.top - 2 < winY):
                     snakeBlue_dir = (0, -TILE_SIZE)
                     currBlueDir = event.key
                     idle = 0   
 
             elif event.key == pg.K_DOWN:
-                if not (snakeBlue.bottom + 2 > WINDOW + winY):
+                if bluePowerToggle:
+                    print("DOWN Power-Up")
+                elif not (snakeBlue.bottom + 2 > WINDOW + winY):
                     snakeBlue_dir = (0, TILE_SIZE)
                     currBlueDir = event.key
                     idle = 0 
 
             elif event.key == pg.K_LEFT:
-                if not (snakeBlue.left - 2 < winX):
+                if bluePowerToggle:
+                    print("LEFT Power-Up")
+                elif not (snakeBlue.left - 2 < winX):
                     snakeBlue_dir = (-TILE_SIZE, 0)
                     currBlueDir = event.key
                     idle = 0 
 
             elif event.key == pg.K_RIGHT:
-                if not (snakeBlue.right + 2 > WINDOW + winX):
+                if bluePowerToggle:
+                    print("RIGHT Power-Up")
+                elif not (snakeBlue.right + 2 > WINDOW + winX):
                     snakeBlue_dir = (TILE_SIZE, 0)
                     currBlueDir = event.key
                     idle = 0 
@@ -813,6 +905,20 @@ while True:
     time_now = pg.time.get_ticks()
     if time_now - time > time_step:
         time = time_now
+
+        ### Time-Out Power-UPs with time limit here:
+        if redSpeedDivider  == 2:
+            redSpeedDividerIter += 1
+            print("redSpeedDividerIter",redSpeedDividerIter)
+            if redSpeedDividerIter == 24:
+                redSpeedDivider = 1
+                redSpeedDividerIter = 0
+
+        if blueSpeedDivider == 2:
+            blueSpeedDividerIter += 1
+            if blueSpeedDividerIter == 24:
+                blueSpeedDivider = 1
+                blueSpeedDividerIter = 0
 
         ### Draw Previous snakeRed with color based on the grid tile the player went over:
 
@@ -938,7 +1044,8 @@ while True:
 
         ### Draw all Front-End components:
         frontEnd()
-
+        print("redSpeedDivider ",redSpeedDivider )
+        print("redSpeedDividerIter",redSpeedDividerIter)
         print()
 
     pg.display.flip()
