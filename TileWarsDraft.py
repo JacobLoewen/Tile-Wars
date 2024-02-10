@@ -161,25 +161,25 @@ blank_art_rect = blank_art.get_rect()
 red_base_art = pg.image.load('tile_art/BLANK.jpg')
 red_base_art_rect = red_base_art.get_rect()
 
-blue_base_art = pg.image.load('tile_art/TileColors.png')
+blue_base_art = pg.image.load('tile_art/BLUE_PLAYER.png')
 blue_base_art_rect = blue_base_art.get_rect()
 
-red_player_art = pg.image.load('tile_art/TileColors.png')
+red_player_art = pg.image.load('tile_art/RED_PLAYER.png')
 red_player_art_rect = red_player_art.get_rect()
 
-blue_player_art = pg.image.load('tile_art/TileColors.png')
+blue_player_art = pg.image.load('tile_art/BLUE_ONE.png')
 blue_player_art_rect = blue_player_art.get_rect()
 
-red_one_art = pg.image.load('tile_art/TileColors.png')
+red_one_art = pg.image.load('tile_art/RED_ONE.png')
 red_one_art_rect = red_one_art.get_rect()
 
-blue_one_art = pg.image.load('tile_art/TileColors.png')
+blue_one_art = pg.image.load('tile_art/BLUE_ONE.png')
 blue_one_art_rect = blue_one_art.get_rect()
 
-red_two_art = pg.image.load('tile_art/TileColors.png')
+red_two_art = pg.image.load('tile_art/RED_TWO.png')
 red_two_art_rect = red_two_art.get_rect()
 
-blue_two_art = pg.image.load('tile_art/TileColors.png')
+blue_two_art = pg.image.load('tile_art/BLUE_TWO.png')
 blue_two_art_rect = blue_two_art.get_rect()
 
 power_up_art = pg.image.load('tile_art/TileColors.png')
