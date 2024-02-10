@@ -155,19 +155,21 @@ testImageRect = testImage.get_rect()
 ###
 
 ### Custom Art:
-blank_art = pg.image.load('TileColors.png')
+blank_art = pg.image.load('tile_art/BLANK.png')
 blank_art_rect = blank_art.get_rect()
 
-red_base_art = pg.image.load('tile_art/BLANK.jpg')
+red_base_art = pg.image.load('tile_art/RED_BASE.png')
 red_base_art_rect = red_base_art.get_rect()
 
 blue_base_art = pg.image.load('tile_art/BLUE_PLAYER.png')
 blue_base_art_rect = blue_base_art.get_rect()
 
 red_player_art = pg.image.load('tile_art/RED_PLAYER.png')
+red_player_art = pg.transform.scale(red_player_art,(48,48))
 red_player_art_rect = red_player_art.get_rect()
 
 blue_player_art = pg.image.load('tile_art/BLUE_ONE.png')
+blue_player_art = pg.transform.scale(blue_player_art,(48,48))
 blue_player_art_rect = blue_player_art.get_rect()
 
 red_one_art = pg.image.load('tile_art/RED_ONE.png')
@@ -182,10 +184,10 @@ red_two_art_rect = red_two_art.get_rect()
 blue_two_art = pg.image.load('tile_art/BLUE_TWO.png')
 blue_two_art_rect = blue_two_art.get_rect()
 
-power_up_art = pg.image.load('tile_art/TileColors.png')
+power_up_art = pg.image.load('tile_art/POWER_UP.png')
 power_up_art_rect = power_up_art.get_rect()
 
-ultra_power_up_art = pg.image.load('tile_art/TileColors.png')
+ultra_power_up_art = pg.image.load('tile_art/ULTRA_POWER_UP.png')
 ultra_power_up_art_rect = ultra_power_up_art.get_rect()
 
 art = [blank_art, red_base_art, blue_base_art, red_one_art, blue_one_art, red_two_art, blue_two_art, red_player_art, blue_player_art, power_up_art, ultra_power_up_art]
@@ -222,8 +224,10 @@ def frontEnd():
     #pg.draw.rect(SCREEN, colors[BLUE_PLAYER], snakeBlue) ### Blue Player
 
     ### Draw Character Tile (Custom Art)
-    red_player_art_rect.center = (snakeRed[0], snakeRed[1])
-    blue_player_art_rect.center = (snakeBlue[0], snakeBlue[1])
+    red_player_art_rect.center = (snakeRed[0] + 24, snakeRed[1] + 24)
+    SCREEN.blit(red_player_art, red_player_art_rect)
+    blue_player_art_rect.center = (snakeBlue[0] + 24, snakeBlue[1] + 24)
+    SCREEN.blit(blue_player_art, blue_player_art_rect)
 
     #Could make it be a 'draw character tile' function which takes the parameter of the tile in front and then decides whether it draws it or not
 
@@ -669,7 +673,6 @@ def drawTiles():
             # SCREEN.blit(testImage, testImageRect)
 
             pg.draw.rect(SCREEN, colors[grid[y][x]], rect)
-            SCREEN.blit()
 
 def squareGrid(player: str):
     global snakeRed
