@@ -48,10 +48,6 @@ get_random_position = lambda: [randrange(*RANGEX), randrange(*RANGEY)]
 get_random_position_red = lambda: [randrange(*RANGEX), randrange(*RANGEYRed)]
 get_random_position_blue = lambda: [randrange(*RANGEX), randrange(*RANGEYBlue)]
 
-testImage = pg.image.load('TileColors.png')
-testImageRect = testImage.get_rect()
-# testImageRect.center = (winX - 150, winY + 200)
-
 ### Create grid | In order to exchange grid -> positioning, do formula y = 25 + 50x where x is the position of the tile in range (0, 14). For
 ### positioning -> grid, it will be x = (y - 25)/50 where y is the position number from range (25, 775). 
 ### Creating a border around grid with value -1 for BORDER
@@ -148,26 +144,52 @@ blue_two = (0, 0, 153, 255)
 power_up = (255, 255, 255, 255)
 ultra_power_up = (225, 215, 0, 255)
 
-
-### Oli's color codes
-# border = (0, 0, 0, 255)
-# blank = (0, 0, 0, 225)
-
-# red_base = (244, 151, 122, 255) #red_base = (51, 0, 0, 255)
-# blue_base = (114, 182, 198, 255) #blue_base = (0, 0, 51, 255)
-
-# red_player = (212, 55, 39, 255)
-# blue_player = (38, 70, 137, 255)
-
-# red_one = (254, 196, 96, 255)
-# blue_one = (140, 168, 68, 255)
-
-# red_two = (245, 157, 66, 255)
-# blue_two = (13, 70, 36, 255)
-
-# power_up = (255, 255, 255, 255)
-
 colors = [blank, red_base, blue_base, red_one, blue_one, red_two, blue_two, red_player, blue_player, power_up, ultra_power_up]
+
+###
+
+testImage = pg.image.load('TileColors.png')
+testImageRect = testImage.get_rect()
+# testImageRect.center = (winX - 150, winY + 200)
+
+###
+
+### Custom Art:
+blank_art = pg.image.load('TileColors.png')
+blank_art_rect = blank_art.get_rect()
+
+red_base_art = pg.image.load('tile_art/BLANK.jpg')
+red_base_art_rect = red_base_art.get_rect()
+
+blue_base_art = pg.image.load('tile_art/TileColors.png')
+blue_base_art_rect = blue_base_art.get_rect()
+
+red_player_art = pg.image.load('tile_art/TileColors.png')
+red_player_art_rect = red_player_art.get_rect()
+
+blue_player_art = pg.image.load('tile_art/TileColors.png')
+blue_player_art_rect = blue_player_art.get_rect()
+
+red_one_art = pg.image.load('tile_art/TileColors.png')
+red_one_art_rect = red_one_art.get_rect()
+
+blue_one_art = pg.image.load('tile_art/TileColors.png')
+blue_one_art_rect = blue_one_art.get_rect()
+
+red_two_art = pg.image.load('tile_art/TileColors.png')
+red_two_art_rect = red_two_art.get_rect()
+
+blue_two_art = pg.image.load('tile_art/TileColors.png')
+blue_two_art_rect = blue_two_art.get_rect()
+
+power_up_art = pg.image.load('tile_art/TileColors.png')
+power_up_art_rect = power_up_art.get_rect()
+
+ultra_power_up_art = pg.image.load('tile_art/TileColors.png')
+ultra_power_up_art_rect = ultra_power_up_art.get_rect()
+
+art = [blank_art, red_base_art, blue_base_art, red_one_art, blue_one_art, red_two_art, blue_two_art, red_player_art, blue_player_art, power_up_art, ultra_power_up_art]
+
 
 def frontEnd():
     global snakeRed
@@ -195,9 +217,13 @@ def frontEnd():
     homeBases() ### Bases
     sideFeatures()
 
-    ### Draw Character Tile
-    pg.draw.rect(SCREEN, colors[RED_PLAYER], snakeRed) ### Red Player
-    pg.draw.rect(SCREEN, colors[BLUE_PLAYER], snakeBlue) ### Blue Player
+    ### Draw Character Tile (Colors)
+    #pg.draw.rect(SCREEN, colors[RED_PLAYER], snakeRed) ### Red Player
+    #pg.draw.rect(SCREEN, colors[BLUE_PLAYER], snakeBlue) ### Blue Player
+
+    ### Draw Character Tile (Custom Art)
+    red_player_art_rect.center = (snakeRed[0], snakeRed[1])
+    blue_player_art_rect.center = (snakeBlue[0], snakeBlue[1])
 
     #Could make it be a 'draw character tile' function which takes the parameter of the tile in front and then decides whether it draws it or not
 
@@ -637,12 +663,13 @@ def drawTiles():
             pixelY = int((50*y)+winY)
 
             rect = pg.Rect(pixelX, pixelY, TILE_SIZE, TILE_SIZE)
-            testImageRect.center = (pixelX, pixelY)
+            #rect.center = (pixelX, pixelY)
 
             # testImageRect.center = (pixelX + 25, pixelY + 25)
             # SCREEN.blit(testImage, testImageRect)
 
             pg.draw.rect(SCREEN, colors[grid[y][x]], rect)
+            SCREEN.blit()
 
 def squareGrid(player: str):
     global snakeRed
