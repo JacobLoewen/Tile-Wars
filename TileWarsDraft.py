@@ -48,6 +48,10 @@ get_random_position = lambda: [randrange(*RANGEX), randrange(*RANGEY)]
 get_random_position_red = lambda: [randrange(*RANGEX), randrange(*RANGEYRed)]
 get_random_position_blue = lambda: [randrange(*RANGEX), randrange(*RANGEYBlue)]
 
+testImage = pg.image.load('TileColors.png')
+testImageRect = testImage.get_rect()
+# testImageRect.center = (winX - 150, winY + 200)
+
 ### Create grid | In order to exchange grid -> positioning, do formula y = 25 + 50x where x is the position of the tile in range (0, 14). For
 ### positioning -> grid, it will be x = (y - 25)/50 where y is the position number from range (25, 775). 
 ### Creating a border around grid with value -1 for BORDER
@@ -170,6 +174,8 @@ def frontEnd():
     global snakeBlue
     global colors
     global power_iter
+    global testImage
+    global testImageRect
     
     SCREEN.fill('black') ### Blanks
     drawTiles() ### Paths
@@ -631,6 +637,11 @@ def drawTiles():
             pixelY = int((50*y)+winY)
 
             rect = pg.Rect(pixelX, pixelY, TILE_SIZE, TILE_SIZE)
+            testImageRect.center = (pixelX, pixelY)
+
+            # testImageRect.center = (pixelX + 25, pixelY + 25)
+            # SCREEN.blit(testImage, testImageRect)
+
             pg.draw.rect(SCREEN, colors[grid[y][x]], rect)
 
 def squareGrid(player: str):
