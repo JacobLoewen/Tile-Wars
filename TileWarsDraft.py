@@ -18,7 +18,7 @@ winY: int = int((screenY - 750) / 2)
 
 TILE_SIZE = 50
 
-POINTS_MAX = 5
+POWER_MAX = 5
 
 ### GRID PLACEHOLDERS:
 BLANK = 0
@@ -75,12 +75,13 @@ blueSpeedDivider  = 1
 redSpeedDividerIter = 0
 blueSpeedDividerIter = 0
 
-i1 = 5
+i1 = 1
 j1 = 0
 
-gameTimer = 5 ### 3 Minutes (-1 second)
+gameTimer = 1 ### 3 Minutes (-1 second)
 gameTimerText = "GO!"
 eighths = 0
+fourths = 0
 
 foodEaten = True
 
@@ -207,7 +208,7 @@ def sideFeatures():
     global snakeRed
     global powerCountRed
     global powerCountBlue
-    global POINTS_MAX
+    global POWER_MAX
 
     redPowerCounterTile = snakeRed.copy()
     bluePowerCounterTile = snakeRed.copy()
@@ -235,8 +236,8 @@ def sideFeatures():
     text_position = (winX - 209, winY + 63)
     SCREEN.blit(text_render, text_position)
 
-    if powerCountRed > POINTS_MAX:
-        powerCountRed = POINTS_MAX
+    if powerCountRed > POWER_MAX:
+        powerCountRed = POWER_MAX
 
     text_render = font.render(str(powerCountRed), True, (255, 255, 255))
     #text_position = (420, 232)
@@ -273,8 +274,8 @@ def sideFeatures():
     text_position = (winX + 941, winY + 63)
     SCREEN.blit(text_render, text_position)
 
-    if powerCountBlue > POINTS_MAX:
-        powerCountBlue = POINTS_MAX
+    if powerCountBlue > POWER_MAX:
+        powerCountBlue = POWER_MAX
 
     text_render = font.render(str(powerCountBlue), True, (255, 255, 255))
     #text_position = (1570,232)
@@ -286,7 +287,75 @@ def sideFeatures():
     text_position = (winX + 985, winY + 132)
     SCREEN.blit(text_render, text_position)
 
+def drawWinLose(winner: str, draw: bool):
+    global redPointsCounter
+    global bluePointsCounter
 
+    SCREEN.fill('black') ### Blanks
+    drawTiles() ### Paths
+        ### Make 'base' tiles static where the first layer disappears but the player tile does not
+    homeBases() ### Bases
+    sideFeatures()
+
+    ### Draw Character Tile
+    pg.draw.rect(SCREEN, colors[RED_PLAYER], snakeRed) ### Red Player
+    pg.draw.rect(SCREEN, colors[BLUE_PLAYER], snakeBlue) ### Blue Player
+
+    drawGrid()
+
+
+    font = pg.font.Font('Questrial-Regular.ttf', 65)
+
+    ### Draw Win and Lose
+    if draw:
+        if winner == "Red":
+            text_render = font.render("YOU", True, (255, 0, 0))
+            text_position = (winX - 265, winY + 300)
+            SCREEN.blit(text_render, text_position)
+
+            text_render = font.render("WIN!", True, (255, 0, 0))
+            text_position = (winX - 262, winY + 380)
+            SCREEN.blit(text_render, text_position)
+
+            text_render = font.render("YOU", True, (0, 0, 255))
+            text_position = (winX + 880, winY + 300)
+            SCREEN.blit(text_render, text_position)
+
+            text_render = font.render("LOSE!", True, (0, 0, 255))
+            text_position = (winX + 860, winY + 380)
+            SCREEN.blit(text_render, text_position)
+            
+        elif winner == "Blue":
+            text_render = font.render("YOU", True, (255, 0, 0))
+            text_position = (winX - 265, winY + 300)
+            SCREEN.blit(text_render, text_position)
+
+            text_render = font.render("LOSE!", True, (255, 0, 0))
+            text_position = (winX - 285, winY + 380)
+            SCREEN.blit(text_render, text_position)
+
+            text_render = font.render("YOU", True, (0, 0, 255))
+            text_position = (winX + 880, winY + 300)
+            SCREEN.blit(text_render, text_position)
+
+            text_render = font.render("WIN!", True, (0, 0, 255))
+            text_position = (winX + 883, winY + 380)
+            SCREEN.blit(text_render, text_position)
+        
+        elif winner == "Tie":
+            text_render = font.render("TIE!", True, (255, 0, 0))
+            text_position = (winX - 255, winY + 300)
+            SCREEN.blit(text_render, text_position)
+
+            text_render = font.render("TIE!", True, (0, 0, 255))
+            text_position = (winX + 900, winY + 300)
+            SCREEN.blit(text_render, text_position)
+
+
+    elif not draw:
+        text_render = font.render("", True, (255, 255, 255))
+        text_position = (winX + 941, winY + 63)
+        SCREEN.blit(text_render, text_position)
 
 def invincibilityBlockRed():
     global power 
@@ -1098,7 +1167,8 @@ while True:
 while True:
     print("gameTimer:",gameTimer)
     if gameTimer == -1:
-        testVar = input("Testing input: ")
+        # testVar = input("Testing input: ")
+        break
     for event in pg.event.get():
         if event.type == pg.QUIT:
             exit()
@@ -1410,104 +1480,33 @@ while True:
 
 
 
-### While loop is solely for the end (when players can no longer move)
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Once the game is done:
+draw = True
+
+winner = "Tie"
+
+if redPointsCounter > bluePointsCounter:
+    winner = "Red"
+elif redPointsCounter < bluePointsCounter:
+    winner = "Blue"
+
 while True:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             exit()
-        if event.type == pg.KEYUP:
-            if event.key == pg.K_c:
-                redPowerToggle = False
-            elif event.key == pg.K_m:
-                bluePowerToggle = False
-        elif event.type == pg.KEYDOWN:
-            #for i in grid:
-            #    print(i)
-            #print("powerCountRed:",powerCountRed)
-            #print("powerCountBlue:",powerCountBlue)
-            #print("left: " + str(snakeRed.left) + ", right: " + str(snakeRed.right) + ".")
-            #print("top: " + str(snakeRed.top) + ", bottom: " + str(snakeRed.bottom) + ".")
-
-            ### Red Player
-
-            ### Power-Up Usage
-            if event.key == pg.K_c:
-                redPowerToggle = True
-            if event.key == pg.K_m:
-                bluePowerToggle = True
-
-            ### Movement
-            if event.key == pg.K_w:
-                if redPowerToggle:
-                    if powerCountRed >= 3:
-                        redSpeedDivider = 2
-                        powerCountRed -= 3
-                        print("W Power-Up")
-                elif not (snakeRed.top - 2 < winY):
-                    snakeRed_dir = (0, -TILE_SIZE)
-                    currRedDir = event.key
-                    idle = 0   
-
-            elif event.key == pg.K_s:
-                if redPowerToggle:
-                    print("S Power-Up")
-                elif not (snakeRed.bottom + 2 > WINDOW + winY):
-                    snakeRed_dir = (0, TILE_SIZE)
-                    currRedDir = event.key
-                    idle = 0 
-
-            elif event.key == pg.K_a:
-                if redPowerToggle:
-                    print("A Power-Up")
-                elif not (snakeRed.left - 2 < winX):
-                    snakeRed_dir = (-TILE_SIZE, 0)
-                    currRedDir = event.key
-                    idle = 0 
-
-            elif event.key == pg.K_d:
-                if redPowerToggle:
-                    print("D Power-Up")
-                elif not (snakeRed.right + 2 > WINDOW + winX):
-                    snakeRed_dir = (TILE_SIZE, 0)
-                    currRedDir = event.key
-                    idle = 0 
-
-            ### Blue Player:
-            if event.key == pg.K_UP:
-                if bluePowerToggle:
-                    if powerCountBlue >= 3:
-                        powerCountBlue -= 3
-                        blueSpeedDivider = 2
-                        print("UP Power-Up")
-                elif not (snakeBlue.top - 2 < winY):
-                    snakeBlue_dir = (0, -TILE_SIZE)
-                    currBlueDir = event.key
-                    idle = 0   
-
-            elif event.key == pg.K_DOWN:
-                if bluePowerToggle:
-                    print("DOWN Power-Up")
-                elif not (snakeBlue.bottom + 2 > WINDOW + winY):
-                    snakeBlue_dir = (0, TILE_SIZE)
-                    currBlueDir = event.key
-                    idle = 0 
-
-            elif event.key == pg.K_LEFT:
-                if bluePowerToggle:
-                    print("LEFT Power-Up")
-                elif not (snakeBlue.left - 2 < winX):
-                    snakeBlue_dir = (-TILE_SIZE, 0)
-                    currBlueDir = event.key
-                    idle = 0 
-
-            elif event.key == pg.K_RIGHT:
-                if bluePowerToggle:
-                    print("RIGHT Power-Up")
-                elif not (snakeBlue.right + 2 > WINDOW + winX):
-                    snakeBlue_dir = (TILE_SIZE, 0)
-                    currBlueDir = event.key
-                    idle = 0 
-
 
         if event.type == pg.VIDEORESIZE:
             screenX = event.w
@@ -1525,41 +1524,9 @@ while True:
             RANGEYRed = ((TILE_SIZE // 2) + winY + (WINDOW // 2) - 25, (WINDOW - TILE_SIZE // 2) + winY + 2, TILE_SIZE)
             RANGEYBlue = ((TILE_SIZE // 2) + winY, (WINDOW - TILE_SIZE // 2) - (WINDOW // 2) + 25 + winY + 2, TILE_SIZE)
 
-            get_random_position = lambda: [randrange(*RANGEX), randrange(*RANGEY)]
-            get_random_position_red = lambda: [randrange(*RANGEX), randrange(*RANGEYRed)]
-            get_random_position_blue = lambda: [randrange(*RANGEX), randrange(*RANGEYBlue)]
-
             snakeBlue.move_ip(winX-prevWinX, winY-prevWinY)
             prevSnakeBlue.move_ip(winX-prevWinX, winY-prevWinY)
             power.move_ip(winX-prevWinX, winY-prevWinY)
-
-            ### Make screen Black, call drawGrid, and redraw all tiles
-
-            #SCREEN.fill('black')
-            #drawTiles()
-
-    # font = pg.font.Font('Questrial-Regular.ttf', 65)
-    # text_render = font.render(str(i1), True, (255, 255, 255))
-    # text_position = (winX + 355, winY - 65)
-    # SCREEN.blit(text_render, text_position)
-
-    print()
-
-    if i1 > 0: # Count from 5
-        if j1 < (8): # (8 * 1/8 seconds)
-            time_now = pg.time.get_ticks()
-            if time_now - time > time_step:
-                time = time_now
-                frontEnd()
-                print("Printing i")
-                j1 += 1
-            #clock.tick(60)
-        ### Write number at top of grid
-        else:
-            i1 -= 1
-            j1 = 0
-    else:
-        break
 
     ### Move snakeRed and Draw Tiles
     ### Beginning of time steps
@@ -1567,136 +1534,43 @@ while True:
     if time_now - time > time_step:
         time = time_now
 
-        ### Time-Out Power-UPs with time limit here:
-        if redSpeedDivider  == 2:
-            redSpeedDividerIter += 1
-            #print("redSpeedDividerIter",redSpeedDividerIter)
-            if redSpeedDividerIter == 24: ### 3 (* 8 * 1/8) seconds
-                redSpeedDivider = 1
-                redSpeedDividerIter = 0
-
-        if blueSpeedDivider == 2:
-            blueSpeedDividerIter += 1
-            if blueSpeedDividerIter == 24:
-                blueSpeedDivider = 1
-                blueSpeedDividerIter = 0
+        ### Get half a second to display the "YOU WIN" and "YOU LOSE" messages
+        fourths += 1
+        if fourths == 4:
+            fourths = 0
+            ### Make blinking effect for the Win and Lose messages
+            draw = not draw
+            drawWinLose(winner, draw)
 
         ### Draw Previous snakeRed with color based on the grid tile the player went over:
 
-        snakeRedX = snakeRed.center[0]
-        snakeRedY = snakeRed.center[1]
-
-        gridRedX = int((snakeRedX-winX-25)/50)
-        gridRedY = int((snakeRedY-winY-25)/50)
-
-        #print("idle:",idle)
-
-        if idle == 0:
-            if currRedDir == pg.K_w:
-                snakeRed_dir = (0, -TILE_SIZE)
-                dirsRed = {pg.K_w: 1, pg.K_s: 0, pg.K_a: 1, pg.K_d: 1}
-            if currRedDir == pg.K_s:
-                snakeRed_dir = (0, TILE_SIZE)
-                dirsRed = {pg.K_w: 0, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
-            if currRedDir == pg.K_a:
-                snakeRed_dir = (-TILE_SIZE, 0)
-                dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 0}
-            if currRedDir == pg.K_d:
-                snakeRed_dir = (TILE_SIZE, 0)
-                dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 0, pg.K_d: 1}
+        # if idle == 0:
+        #     if currRedDir == pg.K_w:
+        #         snakeRed_dir = (0, -TILE_SIZE)
+        #         dirsRed = {pg.K_w: 1, pg.K_s: 0, pg.K_a: 1, pg.K_d: 1}
+        #     if currRedDir == pg.K_s:
+        #         snakeRed_dir = (0, TILE_SIZE)
+        #         dirsRed = {pg.K_w: 0, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
+        #     if currRedDir == pg.K_a:
+        #         snakeRed_dir = (-TILE_SIZE, 0)
+        #         dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 0}
+        #     if currRedDir == pg.K_d:
+        #         snakeRed_dir = (TILE_SIZE, 0)
+        #         dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 0, pg.K_d: 1}
 
         #print("winX:",winX,"winX + WINDOW:",winX + WINDOW)
         #print("winY:",winY,"winY + WINDOW:",winY + WINDOW)
         #print(dirsRed)
-
-        if (snakeRed.left - 2 < winX or grid[gridRedY][gridRedX - 1] == BLUE_BASE) and dirsRed[pg.K_d] == 0:
-            print("Can no longer go left")
-        elif (snakeRed.right + 2 > WINDOW + winX or grid[gridRedY][gridRedX + 1] == BLUE_BASE) and dirsRed[pg.K_a] == 0:
-            print("Can no longer go right")
-        elif (snakeRed.top - 2 < winY or grid[gridRedY - 1][gridRedX] == BLUE_BASE) and dirsRed[pg.K_s] == 0:
-            print("Can no longer go up")
-        elif (snakeRed.bottom + 2 > WINDOW + winY or grid[gridRedY + 1][gridRedX] == BLUE_BASE) and dirsRed[pg.K_w] == 0:
-            print("Can no longer go down")
-        else:
-            prevSnakeRed = snakeRed.copy()
-            redMoveCounter += 1
-            
-            if redMoveCounter == redSpeed:
-                #snakeRed.move_ip(snakeRed_dir)
-                redMoveCounter = 0
-                tileColors("Red")
-                ### Problem (TO DO): Must have redSpeed be with
-                ### respect to next tile instead of current tile.
-                ### Create function to get next tile in direction
-
-        tuple_add = [snakeRed.center, snakeRed_dir]
-
-
-        ### Draw Previous snakeBlue with color based on the grid tile the player went over:
-
-        snakeBlueX = snakeBlue.center[0]
-        snakeBlueY = snakeBlue.center[1]
-
-        gridBlueX = int((snakeBlueX-winX-25)/50)
-        gridBlueY = int((snakeBlueY-winY-25)/50)
-
-        if idle == 0:
-            if currBlueDir == pg.K_UP:
-                snakeBlue_dir = (0, -TILE_SIZE)
-                dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 0, pg.K_LEFT: 1, pg.K_RIGHT: 1}
-            if currBlueDir == pg.K_DOWN:
-                snakeBlue_dir = (0, TILE_SIZE)
-                dirsBlue = {pg.K_UP: 0, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 1}
-            if currBlueDir == pg.K_LEFT:
-                snakeBlue_dir = (-TILE_SIZE, 0)
-                dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 0}
-            if currBlueDir == pg.K_RIGHT:
-                snakeBlue_dir = (TILE_SIZE, 0)
-                dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 0, pg.K_RIGHT: 1}
-
-        if (snakeBlue.left - 2 < winX or grid[gridBlueY][gridBlueX - 1] == RED_BASE) and dirsBlue[pg.K_RIGHT] == 0:
-            print("Can no longer go left")
-        elif (snakeBlue.right + 2 > WINDOW + winX or grid[gridBlueY][gridBlueX + 1] == RED_BASE) and dirsBlue[pg.K_LEFT] == 0:
-            print("Can no longer go right")
-        elif (snakeBlue.top - 2 < winY or grid[gridBlueY - 1][gridBlueX] == RED_BASE) and dirsBlue[pg.K_DOWN] == 0:
-            print("Can no longer go up")
-        elif (snakeBlue.bottom + 2 > WINDOW + winY or grid[gridBlueY + 1][gridBlueX] == RED_BASE) and dirsBlue[pg.K_UP] == 0:
-            print("Can no longer go down")
-        else:
-            prevSnakeBlue = snakeBlue.copy()
-            blueMoveCounter += 1
-            if blueMoveCounter == blueSpeed:
-                #snakeBlue.move_ip(snakeBlue_dir)
-                blueMoveCounter = 0
-                tileColors("Blue")
-
-        tuple_add = [snakeBlue.center, snakeBlue_dir]
-
-        ### Compare the two player
-        ### Positions. If they are
-        ### Equal, run playerCollision()
-
-        snakeRedX = snakeRed.center[0]
-        snakeRedY = snakeRed.center[1]
-
-        snakeBlueX = snakeBlue.center[0]
-        snakeBlueY = snakeBlue.center[1]
-
-        gridRedX = int((snakeRedX-winX-25)/50)
-        gridRedY = int((snakeRedY-winY-25)/50)
-
-        #gridRed = grid[gridRedY][gridRedX]
-
-
-        gridBlueX = int((snakeBlueX-winX-25)/50)
-        gridBlueY = int((snakeBlueY-winY-25)/50)
 
         ### And then set variable for
         ### halting movement of defeated
         ### player for 3 seconds
 
         ### Draw all Front-End components:
-        frontEnd()
+        # frontEnd()
+        #print("redSpeedDivider ",redSpeedDivider )
+        #print("redSpeedDividerIter",redSpeedDividerIter)
+        # print("Done!")
 
     pg.display.flip()
     clock.tick(60) 
