@@ -75,10 +75,10 @@ blueSpeedDivider  = 1
 redSpeedDividerIter = 0
 blueSpeedDividerIter = 0
 
-i1 = 1
+i1 = 5
 j1 = 0
 
-gameTimer = 1 ### 3 Minutes (-1 second)
+gameTimer = 179 ### 3 Minutes (-1 second)
 gameTimerText = "GO!"
 eighths = 0
 fourths = 0
