@@ -163,7 +163,7 @@ red_base_art = pg.image.load('tile_art/RED_BASE.png')
 red_base_art = pg.transform.scale(red_base_art,(48,48))
 red_base_art_rect = red_base_art.get_rect()
 
-blue_base_art = pg.image.load('tile_art/BLUE_PLAYER.png')
+blue_base_art = pg.image.load('tile_art/BLUE_BASE.png')
 blue_base_art = pg.transform.scale(blue_base_art,(48,48))
 blue_base_art_rect = blue_base_art.get_rect()
 
@@ -171,7 +171,7 @@ red_player_art = pg.image.load('tile_art/RED_PLAYER.png')
 red_player_art = pg.transform.scale(red_player_art,(48,48))
 red_player_art_rect = red_player_art.get_rect()
 
-blue_player_art = pg.image.load('tile_art/BLUE_ONE.png')
+blue_player_art = pg.image.load('tile_art/BLUE_PLAYER.png')
 blue_player_art = pg.transform.scale(blue_player_art,(48,48))
 blue_player_art_rect = blue_player_art.get_rect()
 
@@ -546,7 +546,8 @@ def homeBases():
             
             grid[gridY][gridX] = BLUE_BASE
             
-            pg.draw.rect(SCREEN, colors[grid[gridY][gridX]], tile)
+            art_rect[grid[gridY][gridX]].center = (tile[0], tile[1])
+            SCREEN.blit(art[grid[gridY][gridX]], art_rect[grid[gridY][gridX]].center)
     
     ### Setup Red home base:
     for posX in range(25, 775, 50):
@@ -582,7 +583,8 @@ def homeBases():
                
             grid[gridY][gridX] = RED_BASE
 
-            pg.draw.rect(SCREEN, colors[grid[gridY][gridX]], tile)
+            art_rect[grid[gridY][gridX]].center = (tile[0], tile[1])
+            SCREEN.blit(art[grid[gridY][gridX]], art_rect[grid[gridY][gridX]].center)
 
 def playerCollision():
     ### Runs if the players are on the
