@@ -156,12 +156,15 @@ testImageRect = testImage.get_rect()
 
 ### Custom Art:
 blank_art = pg.image.load('tile_art/BLANK.png')
+blank_art = pg.transform.scale(blank_art,(48,48))
 blank_art_rect = blank_art.get_rect()
 
 red_base_art = pg.image.load('tile_art/RED_BASE.png')
+red_base_art = pg.transform.scale(red_base_art,(48,48))
 red_base_art_rect = red_base_art.get_rect()
 
 blue_base_art = pg.image.load('tile_art/BLUE_PLAYER.png')
+blue_base_art = pg.transform.scale(blue_base_art,(48,48))
 blue_base_art_rect = blue_base_art.get_rect()
 
 red_player_art = pg.image.load('tile_art/RED_PLAYER.png')
@@ -173,24 +176,31 @@ blue_player_art = pg.transform.scale(blue_player_art,(48,48))
 blue_player_art_rect = blue_player_art.get_rect()
 
 red_one_art = pg.image.load('tile_art/RED_ONE.png')
+red_one_art = pg.transform.scale(red_one_art,(48,48))
 red_one_art_rect = red_one_art.get_rect()
 
 blue_one_art = pg.image.load('tile_art/BLUE_ONE.png')
+blue_one_art = pg.transform.scale(blue_one_art,(48,48))
 blue_one_art_rect = blue_one_art.get_rect()
 
 red_two_art = pg.image.load('tile_art/RED_TWO.png')
+red_two_art = pg.transform.scale(red_two_art,(48,48))
 red_two_art_rect = red_two_art.get_rect()
 
 blue_two_art = pg.image.load('tile_art/BLUE_TWO.png')
+blue_two_art = pg.transform.scale(blue_two_art,(48,48))
 blue_two_art_rect = blue_two_art.get_rect()
 
 power_up_art = pg.image.load('tile_art/POWER_UP.png')
+power_up_art = pg.transform.scale(power_up_art,(48,48))
 power_up_art_rect = power_up_art.get_rect()
 
 ultra_power_up_art = pg.image.load('tile_art/ULTRA_POWER_UP.png')
+ultra_power_up_art = pg.transform.scale(ultra_power_up_art,(48,48))
 ultra_power_up_art_rect = ultra_power_up_art.get_rect()
 
 art = [blank_art, red_base_art, blue_base_art, red_one_art, blue_one_art, red_two_art, blue_two_art, red_player_art, blue_player_art, power_up_art, ultra_power_up_art]
+art_rect = [blank_art_rect, red_base_art_rect, blue_base_art_rect, red_one_art_rect, blue_one_art_rect, red_two_art_rect, blue_two_art_rect, red_player_art_rect, blue_player_art_rect, power_up_art_rect, ultra_power_up_art_rect]
 
 
 def frontEnd():
@@ -671,8 +681,9 @@ def drawTiles():
 
             # testImageRect.center = (pixelX + 25, pixelY + 25)
             # SCREEN.blit(testImage, testImageRect)
+            art_rect[grid[y][x]].center = (pixelX, pixelY)
 
-            pg.draw.rect(SCREEN, colors[grid[y][x]], rect)
+            SCREEN.blit(art[grid[y][x]], art_rect[grid[y][x]].center)
 
 def squareGrid(player: str):
     global snakeRed
