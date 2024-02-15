@@ -115,10 +115,16 @@ screenY = WINDOW
 
 clock = pg.time.Clock()
 
+redDirOrder: [pg.K_w, pg.K_s, pg.K_a, pg.K_d]
+blueDirOrder: [pg.K_UP, pg.K_DOWN, pg.K_LEFT, pg.K_RIGHT]
+
 dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
 dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 1}
+
+### Initialize
 currRedDir = pg.K_0
 currBlueDir = pg.K_1
+
 prevSnakeRed = snakeRed.copy()
 prevSnakeBlue = snakeBlue.copy()
 
@@ -935,7 +941,7 @@ while True:
                 bluePowerToggle = True
 
             ### Movement
-            if event.key == pg.K_w:
+            if event.key == redDirOrder[0]:
                 if redPowerToggle:
                     if powerCountRed >= 3:
                         redSpeedDivider = 2
@@ -946,15 +952,17 @@ while True:
                     currRedDir = event.key
                     idle = 0   
 
-            elif event.key == pg.K_s:
+            elif event.key == redDirOrder[1]:
                 if redPowerToggle:
-                    print("S Power-Up")
+                    if powerCountRed >= 5: ### Can change this number later
+                        ### Randomize Blue's controls for 10 seconds
+                        print("S Power-Up")
                 elif not (snakeRed.bottom + 2 > WINDOW + winY):
                     snakeRed_dir = (0, TILE_SIZE)
                     currRedDir = event.key
                     idle = 0 
 
-            elif event.key == pg.K_a:
+            elif event.key == redDirOrder[2]:
                 if redPowerToggle:
                     print("A Power-Up")
                 elif not (snakeRed.left - 2 < winX):
@@ -962,7 +970,7 @@ while True:
                     currRedDir = event.key
                     idle = 0 
 
-            elif event.key == pg.K_d:
+            elif event.key == redDirOrder[3]:
                 if redPowerToggle:
                     print("D Power-Up")
                 elif not (snakeRed.right + 2 > WINDOW + winX):
@@ -971,7 +979,7 @@ while True:
                     idle = 0 
 
             ### Blue Player:
-            if event.key == pg.K_UP:
+            if event.key == blueDirOrder[0]:
                 if bluePowerToggle:
                     if powerCountBlue >= 3:
                         powerCountBlue -= 3
@@ -982,7 +990,7 @@ while True:
                     currBlueDir = event.key
                     idle = 0   
 
-            elif event.key == pg.K_DOWN:
+            elif event.key == blueDirOrder[1]:
                 if bluePowerToggle:
                     print("DOWN Power-Up")
                 elif not (snakeBlue.bottom + 2 > WINDOW + winY):
@@ -990,7 +998,7 @@ while True:
                     currBlueDir = event.key
                     idle = 0 
 
-            elif event.key == pg.K_LEFT:
+            elif event.key == blueDirOrder[2]:
                 if bluePowerToggle:
                     print("LEFT Power-Up")
                 elif not (snakeBlue.left - 2 < winX):
@@ -998,7 +1006,7 @@ while True:
                     currBlueDir = event.key
                     idle = 0 
 
-            elif event.key == pg.K_RIGHT:
+            elif event.key == blueDirOrder[3]:
                 if bluePowerToggle:
                     print("RIGHT Power-Up")
                 elif not (snakeBlue.right + 2 > WINDOW + winX):
@@ -1066,6 +1074,8 @@ while True:
         time = time_now
 
         ### Time-Out Power-UPs with time limit here:
+
+        ### Speed:
         if redSpeedDivider  == 2:
             redSpeedDividerIter += 1
             #print("redSpeedDividerIter",redSpeedDividerIter)
@@ -1078,6 +1088,9 @@ while True:
             if blueSpeedDividerIter == 24:
                 blueSpeedDivider = 1
                 blueSpeedDividerIter = 0
+
+        ### Random Controls:
+
 
         ### Draw Previous snakeRed with color based on the grid tile the player went over:
 
