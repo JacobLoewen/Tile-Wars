@@ -75,13 +75,6 @@ blueSpeedDivider  = 1
 redSpeedDividerIter = 0
 blueSpeedDividerIter = 0
 
-### Arrays and Increments before loop in move counters
-redDirOrder = [pg.K_s, pg.K_w, pg.K_a, pg.K_d]
-blueDirOrder = [pg.K_DOWN, pg.K_UP, pg.K_LEFT, pg.K_RIGHT]
-
-redDirOrderIter = 0
-blueDirOrderIter = 0
-
 
 i1 = 5
 j1 = 0
@@ -124,13 +117,13 @@ clock = pg.time.Clock()
 
 dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
 dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 1}
-
-### Initialize
 currRedDir = pg.K_0
 currBlueDir = pg.K_1
-
 prevSnakeRed = snakeRed.copy()
 prevSnakeBlue = snakeBlue.copy()
+
+idle = 0 #May be able to delete
+### idle = 1
 
 ### Colors:
 border = (0, 0, 0, 255)
@@ -920,12 +913,12 @@ while True:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             exit()
-        # if event.type == pg.KEYUP:
-        #     if event.key == pg.K_c:
-        #         redPowerToggle = False
-        #     elif event.key == pg.K_m:
-        #         bluePowerToggle = False
-        if event.type == pg.KEYDOWN:
+        if event.type == pg.KEYUP:
+            if event.key == pg.K_c:
+                redPowerToggle = False
+            elif event.key == pg.K_m:
+                bluePowerToggle = False
+        elif event.type == pg.KEYDOWN:
             #for i in grid:
             #    print(i)
             #print("powerCountRed:",powerCountRed)
@@ -936,76 +929,82 @@ while True:
             ### Red Player
 
             ### Power-Up Usage
-            # if event.key == pg.K_c:
-            #     redPowerToggle = True
-            # if event.key == pg.K_m:
-            #     bluePowerToggle = True
+            if event.key == pg.K_c:
+                redPowerToggle = True
+            if event.key == pg.K_m:
+                bluePowerToggle = True
 
             ### Movement
-            if event.key == redDirOrder[0]:
-                # if redPowerToggle:
-                #     if powerCountRed >= 3:
-                #         redSpeedDivider = 2
-                #         powerCountRed -= 3
-                #         print("W Power-Up")
-                if not (snakeRed.top - 2 < winY):
+            if event.key == pg.K_w:
+                if redPowerToggle:
+                    if powerCountRed >= 3:
+                        redSpeedDivider = 2
+                        powerCountRed -= 3
+                        print("W Power-Up")
+                elif not (snakeRed.top - 2 < winY):
                     snakeRed_dir = (0, -TILE_SIZE)
                     currRedDir = event.key
+                    idle = 0   
 
-            elif event.key == redDirOrder[1]:
-                # if redPowerToggle:
-                #     if powerCountRed >= 5: ### Can change this number later
-                #         ### Randomize Blue's controls for 10 seconds
-                #         print("S Power-Up")
-                if not (snakeRed.bottom + 2 > WINDOW + winY):
+            elif event.key == pg.K_s:
+                if redPowerToggle:
+                    print("S Power-Up")
+                elif not (snakeRed.bottom + 2 > WINDOW + winY):
                     snakeRed_dir = (0, TILE_SIZE)
                     currRedDir = event.key
+                    idle = 0 
 
-            elif event.key == redDirOrder[2]:
-                # if redPowerToggle:
-                #     print("A Power-Up")
-                if not (snakeRed.left - 2 < winX):
+            elif event.key == pg.K_a:
+                if redPowerToggle:
+                    print("A Power-Up")
+                elif not (snakeRed.left - 2 < winX):
                     snakeRed_dir = (-TILE_SIZE, 0)
                     currRedDir = event.key
+                    idle = 0 
 
-            elif event.key == redDirOrder[3]:
-                # if redPowerToggle:
-                #     print("D Power-Up")
-                if not (snakeRed.right + 2 > WINDOW + winX):
+            elif event.key == pg.K_d:
+                if redPowerToggle:
+                    print("D Power-Up")
+                elif not (snakeRed.right + 2 > WINDOW + winX):
                     snakeRed_dir = (TILE_SIZE, 0)
                     currRedDir = event.key
+                    idle = 0 
 
             ### Blue Player:
-            if event.key == blueDirOrder[0]:
-                # if bluePowerToggle:
-                #     if powerCountBlue >= 3:
-                #         powerCountBlue -= 3
-                #         blueSpeedDivider = 2
-                #         print("UP Power-Up")
-                if not (snakeBlue.top - 2 < winY):
+            if event.key == pg.K_UP:
+                if bluePowerToggle:
+                    if powerCountBlue >= 3:
+                        powerCountBlue -= 3
+                        blueSpeedDivider = 2
+                        print("UP Power-Up")
+                elif not (snakeBlue.top - 2 < winY):
                     snakeBlue_dir = (0, -TILE_SIZE)
                     currBlueDir = event.key
+                    idle = 0   
 
-            elif event.key == blueDirOrder[1]:
-                # if bluePowerToggle:
-                #     print("DOWN Power-Up")
-                if not (snakeBlue.bottom + 2 > WINDOW + winY):
+            elif event.key == pg.K_DOWN:
+                if bluePowerToggle:
+                    print("DOWN Power-Up")
+                elif not (snakeBlue.bottom + 2 > WINDOW + winY):
                     snakeBlue_dir = (0, TILE_SIZE)
                     currBlueDir = event.key
+                    idle = 0 
 
-            elif event.key == blueDirOrder[2]:
-                # if bluePowerToggle:
-                #     print("LEFT Power-Up")
-                if not (snakeBlue.left - 2 < winX):
+            elif event.key == pg.K_LEFT:
+                if bluePowerToggle:
+                    print("LEFT Power-Up")
+                elif not (snakeBlue.left - 2 < winX):
                     snakeBlue_dir = (-TILE_SIZE, 0)
                     currBlueDir = event.key
+                    idle = 0 
 
-            elif event.key == blueDirOrder[3]:
-                # if bluePowerToggle:
-                #     print("RIGHT Power-Up")
-                if not (snakeBlue.right + 2 > WINDOW + winX):
+            elif event.key == pg.K_RIGHT:
+                if bluePowerToggle:
+                    print("RIGHT Power-Up")
+                elif not (snakeBlue.right + 2 > WINDOW + winX):
                     snakeBlue_dir = (TILE_SIZE, 0)
                     currBlueDir = event.key
+                    idle = 0 
 
 
         if event.type == pg.VIDEORESIZE:
@@ -1050,7 +1049,7 @@ while True:
             if time_now - time > time_step:
                 time = time_now
                 frontEnd()
-                # print("Printing i")
+                print("Printing i")
                 j1 += 1
             #clock.tick(60)
         ### Write number at top of grid
@@ -1067,23 +1066,18 @@ while True:
         time = time_now
 
         ### Time-Out Power-UPs with time limit here:
+        if redSpeedDivider  == 2:
+            redSpeedDividerIter += 1
+            #print("redSpeedDividerIter",redSpeedDividerIter)
+            if redSpeedDividerIter == 24: ### 3 (* 8 * 1/8) seconds
+                redSpeedDivider = 1
+                redSpeedDividerIter = 0
 
-        # ### Speed:
-        # if redSpeedDivider  == 2:
-        #     redSpeedDividerIter += 1
-        #     #print("redSpeedDividerIter",redSpeedDividerIter)
-        #     if redSpeedDividerIter == 24: ### 3 (* 8 * 1/8) seconds
-        #         redSpeedDivider = 1
-        #         redSpeedDividerIter = 0
-
-        # if blueSpeedDivider == 2:
-        #     blueSpeedDividerIter += 1
-        #     if blueSpeedDividerIter == 24:
-        #         blueSpeedDivider = 1
-        #         blueSpeedDividerIter = 0
-
-        ### Random Controls:
-
+        if blueSpeedDivider == 2:
+            blueSpeedDividerIter += 1
+            if blueSpeedDividerIter == 24:
+                blueSpeedDivider = 1
+                blueSpeedDividerIter = 0
 
         ### Draw Previous snakeRed with color based on the grid tile the player went over:
 
@@ -1093,43 +1087,45 @@ while True:
         gridRedX = int((snakeRedX-winX-25)/50)
         gridRedY = int((snakeRedY-winY-25)/50)
 
+        #print("idle:",idle)
 
-        if currRedDir == pg.K_w:
-            snakeRed_dir = (0, -TILE_SIZE)
-            dirsRed = {pg.K_w: 1, pg.K_s: 0, pg.K_a: 1, pg.K_d: 1}
-        if currRedDir == pg.K_s:
-            snakeRed_dir = (0, TILE_SIZE)
-            dirsRed = {pg.K_w: 0, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
-        if currRedDir == pg.K_a:
-            snakeRed_dir = (-TILE_SIZE, 0)
-            dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 0}
-        if currRedDir == pg.K_d:
-            snakeRed_dir = (TILE_SIZE, 0)
-            dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 0, pg.K_d: 1}
+        if idle == 0:
+            if currRedDir == pg.K_w:
+                snakeRed_dir = (0, -TILE_SIZE)
+                dirsRed = {pg.K_w: 1, pg.K_s: 0, pg.K_a: 1, pg.K_d: 1}
+            if currRedDir == pg.K_s:
+                snakeRed_dir = (0, TILE_SIZE)
+                dirsRed = {pg.K_w: 0, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
+            if currRedDir == pg.K_a:
+                snakeRed_dir = (-TILE_SIZE, 0)
+                dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 0}
+            if currRedDir == pg.K_d:
+                snakeRed_dir = (TILE_SIZE, 0)
+                dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 0, pg.K_d: 1}
 
         #print("winX:",winX,"winX + WINDOW:",winX + WINDOW)
         #print("winY:",winY,"winY + WINDOW:",winY + WINDOW)
         #print(dirsRed)
 
-        # if (snakeRed.left - 2 < winX or grid[gridRedY][gridRedX - 1] == BLUE_BASE) and dirsRed[pg.K_d] == 0:
-        #     print("Can no longer go left")
-        # elif (snakeRed.right + 2 > WINDOW + winX or grid[gridRedY][gridRedX + 1] == BLUE_BASE) and dirsRed[pg.K_a] == 0:
-        #     print("Can no longer go right")
-        # elif (snakeRed.top - 2 < winY or grid[gridRedY - 1][gridRedX] == BLUE_BASE) and dirsRed[pg.K_s] == 0:
-        #     print("Can no longer go up")
-        # elif (snakeRed.bottom + 2 > WINDOW + winY or grid[gridRedY + 1][gridRedX] == BLUE_BASE) and dirsRed[pg.K_w] == 0:
-        #     print("Can no longer go down")
-        # else:
-        #     prevSnakeRed = snakeRed.copy()
-        #     redMoveCounter += 1
+        if (snakeRed.left - 2 < winX or grid[gridRedY][gridRedX - 1] == BLUE_BASE) and dirsRed[pg.K_d] == 0:
+            print("Can no longer go left")
+        elif (snakeRed.right + 2 > WINDOW + winX or grid[gridRedY][gridRedX + 1] == BLUE_BASE) and dirsRed[pg.K_a] == 0:
+            print("Can no longer go right")
+        elif (snakeRed.top - 2 < winY or grid[gridRedY - 1][gridRedX] == BLUE_BASE) and dirsRed[pg.K_s] == 0:
+            print("Can no longer go up")
+        elif (snakeRed.bottom + 2 > WINDOW + winY or grid[gridRedY + 1][gridRedX] == BLUE_BASE) and dirsRed[pg.K_w] == 0:
+            print("Can no longer go down")
+        else:
+            prevSnakeRed = snakeRed.copy()
+            redMoveCounter += 1
             
-        #     if redMoveCounter == redSpeed:
-        #         #snakeRed.move_ip(snakeRed_dir)
-        #         redMoveCounter = 0
-        #         tileColors("Red")
-        #         ### Problem (TO DO): Must have redSpeed be with
-        #         ### respect to next tile instead of current tile.
-        #         ### Create function to get next tile in direction
+            if redMoveCounter == redSpeed:
+                #snakeRed.move_ip(snakeRed_dir)
+                redMoveCounter = 0
+                tileColors("Red")
+                ### Problem (TO DO): Must have redSpeed be with
+                ### respect to next tile instead of current tile.
+                ### Create function to get next tile in direction
 
         tuple_add = [snakeRed.center, snakeRed_dir]
 
@@ -1142,34 +1138,35 @@ while True:
         gridBlueX = int((snakeBlueX-winX-25)/50)
         gridBlueY = int((snakeBlueY-winY-25)/50)
 
-        if currBlueDir == pg.K_UP:
-            snakeBlue_dir = (0, -TILE_SIZE)
-            dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 0, pg.K_LEFT: 1, pg.K_RIGHT: 1}
-        if currBlueDir == pg.K_DOWN:
-            snakeBlue_dir = (0, TILE_SIZE)
-            dirsBlue = {pg.K_UP: 0, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 1}
-        if currBlueDir == pg.K_LEFT:
-            snakeBlue_dir = (-TILE_SIZE, 0)
-            dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 0}
-        if currBlueDir == pg.K_RIGHT:
-            snakeBlue_dir = (TILE_SIZE, 0)
-            dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 0, pg.K_RIGHT: 1}
+        if idle == 0:
+            if currBlueDir == pg.K_UP:
+                snakeBlue_dir = (0, -TILE_SIZE)
+                dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 0, pg.K_LEFT: 1, pg.K_RIGHT: 1}
+            if currBlueDir == pg.K_DOWN:
+                snakeBlue_dir = (0, TILE_SIZE)
+                dirsBlue = {pg.K_UP: 0, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 1}
+            if currBlueDir == pg.K_LEFT:
+                snakeBlue_dir = (-TILE_SIZE, 0)
+                dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 0}
+            if currBlueDir == pg.K_RIGHT:
+                snakeBlue_dir = (TILE_SIZE, 0)
+                dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 0, pg.K_RIGHT: 1}
 
-        # if (snakeBlue.left - 2 < winX or grid[gridBlueY][gridBlueX - 1] == RED_BASE) and dirsBlue[pg.K_RIGHT] == 0:
-        #     print("Can no longer go left")
-        # elif (snakeBlue.right + 2 > WINDOW + winX or grid[gridBlueY][gridBlueX + 1] == RED_BASE) and dirsBlue[pg.K_LEFT] == 0:
-        #     print("Can no longer go right")
-        # elif (snakeBlue.top - 2 < winY or grid[gridBlueY - 1][gridBlueX] == RED_BASE) and dirsBlue[pg.K_DOWN] == 0:
-        #     print("Can no longer go up")
-        # elif (snakeBlue.bottom + 2 > WINDOW + winY or grid[gridBlueY + 1][gridBlueX] == RED_BASE) and dirsBlue[pg.K_UP] == 0:
-        #     print("Can no longer go down")
-        # else:
-        #     prevSnakeBlue = snakeBlue.copy()
-        #     blueMoveCounter += 1
-        #     if blueMoveCounter == blueSpeed:
-        #         #snakeBlue.move_ip(snakeBlue_dir)
-        #         blueMoveCounter = 0
-        #         tileColors("Blue")
+        if (snakeBlue.left - 2 < winX or grid[gridBlueY][gridBlueX - 1] == RED_BASE) and dirsBlue[pg.K_RIGHT] == 0:
+            print("Can no longer go left")
+        elif (snakeBlue.right + 2 > WINDOW + winX or grid[gridBlueY][gridBlueX + 1] == RED_BASE) and dirsBlue[pg.K_LEFT] == 0:
+            print("Can no longer go right")
+        elif (snakeBlue.top - 2 < winY or grid[gridBlueY - 1][gridBlueX] == RED_BASE) and dirsBlue[pg.K_DOWN] == 0:
+            print("Can no longer go up")
+        elif (snakeBlue.bottom + 2 > WINDOW + winY or grid[gridBlueY + 1][gridBlueX] == RED_BASE) and dirsBlue[pg.K_UP] == 0:
+            print("Can no longer go down")
+        else:
+            prevSnakeBlue = snakeBlue.copy()
+            blueMoveCounter += 1
+            if blueMoveCounter == blueSpeed:
+                #snakeBlue.move_ip(snakeBlue_dir)
+                blueMoveCounter = 0
+                tileColors("Blue")
 
         tuple_add = [snakeBlue.center, snakeBlue_dir]
 
@@ -1223,7 +1220,7 @@ while True:
 
 ### This while loop has full respect to Players
 while True:
-    # print("gameTimer:",gameTimer)
+    print("gameTimer:",gameTimer)
     if gameTimer == -1:
         # testVar = input("Testing input: ")
         break
@@ -1236,14 +1233,11 @@ while True:
             elif event.key == pg.K_m:
                 bluePowerToggle = False
         elif event.type == pg.KEYDOWN:
-            
-            print("redDirOrder:",redDirOrder)
-            print("blueDirOrder:",blueDirOrder)
             #for i in grid:
             #    print(i)
             #print("powerCountRed:",powerCountRed)
             #print("powerCountBlue:",powerCountBlue)
-            #print("left: " + str(snakeRed.left) + ", right: " + s tr(snakeRed.right) + ".")
+            #print("left: " + str(snakeRed.left) + ", right: " + str(snakeRed.right) + ".")
             #print("top: " + str(snakeRed.top) + ", bottom: " + str(snakeRed.bottom) + ".")
 
             ### Red Player
@@ -1255,7 +1249,7 @@ while True:
                 bluePowerToggle = True
 
             ### Movement
-            if event.key == redDirOrder[0]:
+            if event.key == pg.K_w:
                 if redPowerToggle:
                     if powerCountRed >= 3:
                         redSpeedDivider = 2
@@ -1264,42 +1258,34 @@ while True:
                 elif not (snakeRed.top - 2 < winY):
                     snakeRed_dir = (0, -TILE_SIZE)
                     currRedDir = event.key
+                    idle = 0   
 
-            elif event.key == redDirOrder[1]:
+            elif event.key == pg.K_s:
                 if redPowerToggle:
-                    if powerCountRed >= -100: ### Temporarily -100
-                        ### Randomize 
-                        # randrange(start, stop[, step])
-                        randomRedDirOrder = [pg.K_s, pg.K_w, pg.K_a, pg.K_d]
-                        for randRed in range(4):
-                            randRedDirection = randomRedDirOrder[randrange(0, (4-randRed))]
-                            print(randRedDirection)
-                            redDirOrder[randRed] = randRedDirection
-                            randomRedDirOrder.remove(randRedDirection)
-                            print("randRed:",randRed)
-                        redDirOrderIter = 80
-                        powerCountRed -= 5
-                        print("S Power-Up")
+                    print("S Power-Up")
                 elif not (snakeRed.bottom + 2 > WINDOW + winY):
                     snakeRed_dir = (0, TILE_SIZE)
                     currRedDir = event.key
+                    idle = 0 
 
-            elif event.key == redDirOrder[2]:
+            elif event.key == pg.K_a:
                 if redPowerToggle:
                     print("A Power-Up")
                 elif not (snakeRed.left - 2 < winX):
                     snakeRed_dir = (-TILE_SIZE, 0)
                     currRedDir = event.key
+                    idle = 0 
 
-            elif event.key == redDirOrder[3]:
+            elif event.key == pg.K_d:
                 if redPowerToggle:
                     print("D Power-Up")
                 elif not (snakeRed.right + 2 > WINDOW + winX):
                     snakeRed_dir = (TILE_SIZE, 0)
                     currRedDir = event.key
+                    idle = 0 
 
             ### Blue Player:
-            if event.key == blueDirOrder[0]:
+            if event.key == pg.K_UP:
                 if bluePowerToggle:
                     if powerCountBlue >= 3:
                         powerCountBlue -= 3
@@ -1308,38 +1294,31 @@ while True:
                 elif not (snakeBlue.top - 2 < winY):
                     snakeBlue_dir = (0, -TILE_SIZE)
                     currBlueDir = event.key
+                    idle = 0   
 
-            elif event.key == blueDirOrder[1]:
+            elif event.key == pg.K_DOWN:
                 if bluePowerToggle:
-                    if powerCountBlue >= -100: ### Temporarily -100
-                        ### Randomize
-                        randomBlueDirOrder = [pg.K_DOWN, pg.K_UP, pg.K_LEFT, pg.K_RIGHT]
-                        for randBlue in range(4):
-                            blueRandDirection = randomBlueDirOrder[randrange(0, (4-randBlue))]
-                            print(blueRandDirection)
-                            blueDirOrder[randBlue] = blueRandDirection
-                            randomBlueDirOrder.remove(blueRandDirection)
-                            print("randBlue:",randBlue)
-                        blueDirOrderIter = 80
-                        powerCountBlue -= 5
                     print("DOWN Power-Up")
                 elif not (snakeBlue.bottom + 2 > WINDOW + winY):
                     snakeBlue_dir = (0, TILE_SIZE)
                     currBlueDir = event.key
+                    idle = 0 
 
-            elif event.key == blueDirOrder[2]:
+            elif event.key == pg.K_LEFT:
                 if bluePowerToggle:
                     print("LEFT Power-Up")
                 elif not (snakeBlue.left - 2 < winX):
                     snakeBlue_dir = (-TILE_SIZE, 0)
                     currBlueDir = event.key
+                    idle = 0 
 
-            elif event.key == blueDirOrder[3]:
+            elif event.key == pg.K_RIGHT:
                 if bluePowerToggle:
                     print("RIGHT Power-Up")
                 elif not (snakeBlue.right + 2 > WINDOW + winX):
                     snakeBlue_dir = (TILE_SIZE, 0)
                     currBlueDir = event.key
+                    idle = 0 
 
 
         if event.type == pg.VIDEORESIZE:
@@ -1398,8 +1377,6 @@ while True:
             gameTimer -= 1
 
         ### Time-Out Power-UPs with time limit here:
-
-        ### Speed:
         if redSpeedDivider  == 2:
             redSpeedDividerIter += 1
             #print("redSpeedDividerIter",redSpeedDividerIter)
@@ -1412,21 +1389,6 @@ while True:
             if blueSpeedDividerIter == 24:
                 blueSpeedDivider = 1
                 blueSpeedDividerIter = 0
-                
-
-        ### Random Controls:
-        if redDirOrderIter == 0:
-            #redDirOrder = [pg.K_w, pg.K_s, pg.K_a, pg.K_d]
-            tempVar = 0
-        else:
-            redDirOrderIter -= 1
-        
-        if blueDirOrderIter == 0:
-            #blueDirOrder = [pg.K_UP, pg.K_DOWN, pg.K_LEFT, pg.K_RIGHT]
-            tempVar = 0
-        else:
-            blueDirOrderIter -= 1
-
 
         ### Draw Previous snakeRed with color based on the grid tile the player went over:
 
@@ -1436,36 +1398,34 @@ while True:
         gridRedX = int((snakeRedX-winX-25)/50)
         gridRedY = int((snakeRedY-winY-25)/50)
 
+        #print("idle:",idle)
 
-        if currRedDir == pg.K_w:
-            snakeRed_dir = (0, -TILE_SIZE)
-            dirsRed = {pg.K_w: 1, pg.K_s: 0, pg.K_a: 1, pg.K_d: 1}
-        if currRedDir == pg.K_s:
-            snakeRed_dir = (0, TILE_SIZE)
-            dirsRed = {pg.K_w: 0, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
-        if currRedDir == pg.K_a:
-            snakeRed_dir = (-TILE_SIZE, 0)
-            dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 0}
-        if currRedDir == pg.K_d:
-            snakeRed_dir = (TILE_SIZE, 0)
-            dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 0, pg.K_d: 1}
+        if idle == 0:
+            if currRedDir == pg.K_w:
+                snakeRed_dir = (0, -TILE_SIZE)
+                dirsRed = {pg.K_w: 1, pg.K_s: 0, pg.K_a: 1, pg.K_d: 1}
+            if currRedDir == pg.K_s:
+                snakeRed_dir = (0, TILE_SIZE)
+                dirsRed = {pg.K_w: 0, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
+            if currRedDir == pg.K_a:
+                snakeRed_dir = (-TILE_SIZE, 0)
+                dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 0}
+            if currRedDir == pg.K_d:
+                snakeRed_dir = (TILE_SIZE, 0)
+                dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 0, pg.K_d: 1}
 
         #print("winX:",winX,"winX + WINDOW:",winX + WINDOW)
         #print("winY:",winY,"winY + WINDOW:",winY + WINDOW)
         #print(dirsRed)
 
         if (snakeRed.left - 2 < winX or grid[gridRedY][gridRedX - 1] == BLUE_BASE) and dirsRed[pg.K_d] == 0:
-            # print("Can no longer go left")
-            tempVar = 0
+            print("Can no longer go left")
         elif (snakeRed.right + 2 > WINDOW + winX or grid[gridRedY][gridRedX + 1] == BLUE_BASE) and dirsRed[pg.K_a] == 0:
-            # print("Can no longer go right")
-            tempVar = 0
+            print("Can no longer go right")
         elif (snakeRed.top - 2 < winY or grid[gridRedY - 1][gridRedX] == BLUE_BASE) and dirsRed[pg.K_s] == 0:
-            # print("Can no longer go up")
-            tempVar = 0
+            print("Can no longer go up")
         elif (snakeRed.bottom + 2 > WINDOW + winY or grid[gridRedY + 1][gridRedX] == BLUE_BASE) and dirsRed[pg.K_w] == 0:
-            # print("Can no longer go down")
-            tempVar = 0
+            print("Can no longer go down")
         else:
             prevSnakeRed = snakeRed.copy()
             redMoveCounter += 1
@@ -1489,31 +1449,28 @@ while True:
         gridBlueX = int((snakeBlueX-winX-25)/50)
         gridBlueY = int((snakeBlueY-winY-25)/50)
 
-        if currBlueDir == pg.K_UP:
-            snakeBlue_dir = (0, -TILE_SIZE)
-            dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 0, pg.K_LEFT: 1, pg.K_RIGHT: 1}
-        if currBlueDir == pg.K_DOWN:
-            snakeBlue_dir = (0, TILE_SIZE)
-            dirsBlue = {pg.K_UP: 0, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 1}
-        if currBlueDir == pg.K_LEFT:
-            snakeBlue_dir = (-TILE_SIZE, 0)
-            dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 0}
-        if currBlueDir == pg.K_RIGHT:
-            snakeBlue_dir = (TILE_SIZE, 0)
-            dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 0, pg.K_RIGHT: 1}
+        if idle == 0:
+            if currBlueDir == pg.K_UP:
+                snakeBlue_dir = (0, -TILE_SIZE)
+                dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 0, pg.K_LEFT: 1, pg.K_RIGHT: 1}
+            if currBlueDir == pg.K_DOWN:
+                snakeBlue_dir = (0, TILE_SIZE)
+                dirsBlue = {pg.K_UP: 0, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 1}
+            if currBlueDir == pg.K_LEFT:
+                snakeBlue_dir = (-TILE_SIZE, 0)
+                dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 0}
+            if currBlueDir == pg.K_RIGHT:
+                snakeBlue_dir = (TILE_SIZE, 0)
+                dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 0, pg.K_RIGHT: 1}
 
         if (snakeBlue.left - 2 < winX or grid[gridBlueY][gridBlueX - 1] == RED_BASE) and dirsBlue[pg.K_RIGHT] == 0:
-            # print("Can no longer go left")
-            tempVar = 0
+            print("Can no longer go left")
         elif (snakeBlue.right + 2 > WINDOW + winX or grid[gridBlueY][gridBlueX + 1] == RED_BASE) and dirsBlue[pg.K_LEFT] == 0:
-            # print("Can no longer go right")
-            tempVar = 0
+            print("Can no longer go right")
         elif (snakeBlue.top - 2 < winY or grid[gridBlueY - 1][gridBlueX] == RED_BASE) and dirsBlue[pg.K_DOWN] == 0:
-            # print("Can no longer go up")
-            tempVar = 0
+            print("Can no longer go up")
         elif (snakeBlue.bottom + 2 > WINDOW + winY or grid[gridBlueY + 1][gridBlueX] == RED_BASE) and dirsBlue[pg.K_UP] == 0:
-            # print("Can no longer go down")
-            tempVar = 0
+            print("Can no longer go down")
         else:
             prevSnakeBlue = snakeBlue.copy()
             blueMoveCounter += 1
@@ -1559,7 +1516,7 @@ while True:
         frontEnd()
         #print("redSpeedDivider ",redSpeedDivider )
         #print("redSpeedDividerIter",redSpeedDividerIter)
-        # print()
+        print()
 
     pg.display.flip()
     clock.tick(60) 
@@ -1639,6 +1596,36 @@ while True:
             ### Make blinking effect for the Win and Lose messages
             draw = not draw
             drawWinLose(winner, draw)
+
+        ### Draw Previous snakeRed with color based on the grid tile the player went over:
+
+        # if idle == 0:
+        #     if currRedDir == pg.K_w:
+        #         snakeRed_dir = (0, -TILE_SIZE)
+        #         dirsRed = {pg.K_w: 1, pg.K_s: 0, pg.K_a: 1, pg.K_d: 1}
+        #     if currRedDir == pg.K_s:
+        #         snakeRed_dir = (0, TILE_SIZE)
+        #         dirsRed = {pg.K_w: 0, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
+        #     if currRedDir == pg.K_a:
+        #         snakeRed_dir = (-TILE_SIZE, 0)
+        #         dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 0}
+        #     if currRedDir == pg.K_d:
+        #         snakeRed_dir = (TILE_SIZE, 0)
+        #         dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 0, pg.K_d: 1}
+
+        #print("winX:",winX,"winX + WINDOW:",winX + WINDOW)
+        #print("winY:",winY,"winY + WINDOW:",winY + WINDOW)
+        #print(dirsRed)
+
+        ### And then set variable for
+        ### halting movement of defeated
+        ### player for 3 seconds
+
+        ### Draw all Front-End components:
+        # frontEnd()
+        #print("redSpeedDivider ",redSpeedDivider )
+        #print("redSpeedDividerIter",redSpeedDividerIter)
+        # print("Done!")
 
     pg.display.flip()
     clock.tick(60) 
