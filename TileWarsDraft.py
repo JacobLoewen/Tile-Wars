@@ -79,7 +79,12 @@ blueSpeedDividerIter = 0
 i1 = 5
 j1 = 0
 
-gameTimer = 179 ### 3 Minutes (-1 second as 'GO' replaces '3:00')
+#Default Timer:
+#gameTimer = 179 ### 3 Minutes (-1 second as 'GO' replaces '3:00')
+
+#Testing Timer (Shorter for testing purposes)
+gameTimer = 29 ### 1/2 of a  Minute (-1 second as 'GO' replaces '0:30')
+
 gameTimerText = "GO!"
 eighths = 0
 fourths = 0
@@ -143,13 +148,9 @@ ultra_power_up = (225, 215, 0, 255)
 
 colors = [blank, red_base, blue_base, red_one, blue_one, red_two, blue_two, red_player, blue_player, power_up, ultra_power_up]
 
-###
-
-testImage = pg.image.load('TileColors.png')
-testImageRect = testImage.get_rect()
+#testImage = pg.image.load('TileColors.png')
+#testImageRect = testImage.get_rect()
 # testImageRect.center = (winX - 150, winY + 200)
-
-###
 
 ### Custom Art:
 blank_art = pg.image.load('tile_art/BLANK.png')
@@ -205,17 +206,15 @@ def frontEnd():
     global snakeBlue
     global colors
     global power_iter
-    global testImage
-    global testImageRect
+    #global testImage
+    #global testImageRect
     
     SCREEN.fill('black') ### Blanks
     drawTiles() ### Paths
 
-    #sideFeatures()
-
     power_iter += 1
     ### Start with every 10 seconds and go up from there:
-    if power_iter >= 90: ### 45 seconds * 2 1/2 seconds of time iteration equals 60 half seconds
+    if power_iter >= 90: ### 45 seconds * 2 half-seconds of time iteration equals 60 half seconds
     #if power_iter >= 10: ### TEMPORARY
         invincibilityBlockBlue()
         invincibilityBlockRed()
@@ -237,10 +236,11 @@ def frontEnd():
     SCREEN.blit(blue_player_art, blue_player_art_rect)
 
     #Could make it be a 'draw character tile' function which takes the parameter of the tile in front and then decides whether it draws it or not
+    # ^ is this done?
 
     # power_iter += 1
     # ### Start with every 10 seconds and go up from there:
-    # if power_iter >= 60: ### 30 seconds * 2 1/2 seconds of time iteration equals 60 half seconds
+    # if power_iter >= 60: ### 30 seconds * 2 half-seconds of time iteration equals 60 half seconds
     # #if power_iter >= 10: ### TEMPORARY
     #     invincibilityBlockBlue()
     #     invincibilityBlockRed()
@@ -262,7 +262,7 @@ def sideFeatures():
     pg.draw.rect(SCREEN, colors[POWER_UP], bluePowerCounterTile)
 
 
-    ### Draw player score areas:
+    ### DRAW PLAYER SCORE AREAS:
 
     ### Starting with Red:
 
@@ -284,15 +284,14 @@ def sideFeatures():
         powerCountRed = POWER_MAX
 
     text_render = font.render(str(powerCountRed), True, (255, 255, 255))
-    #text_position = (420, 232)
     text_position = (winX - 165, winY + 67)
     SCREEN.blit(text_render, text_position)
 
     text_render = font.render(str(redPointsCounter), True, (255, 255, 255))
-    text_position = (winX - 209, winY + 128)
+    text_position = (winX - 165, winY + 128)
     SCREEN.blit(text_render, text_position)
 
-    ### Starting:
+    ### Starting for Timer Counter:
     if i1 > 0:
         text_render = font.render(str(i1), True, (255, 255, 255))
         text_position = (winX + 355, winY - 65)
@@ -314,7 +313,6 @@ def sideFeatures():
     ### Create the font:
     font = pg.font.Font('Questrial-Regular.ttf', 65)
     text_render = font.render("x ", True, (255, 255, 255))
-    #text_position = (1526,228)
     text_position = (winX + 941, winY + 63)
     SCREEN.blit(text_render, text_position)
 
@@ -322,12 +320,10 @@ def sideFeatures():
         powerCountBlue = POWER_MAX
 
     text_render = font.render(str(powerCountBlue), True, (255, 255, 255))
-    #text_position = (1570,232)
     text_position = (winX + 985, winY + 67)
     SCREEN.blit(text_render, text_position)
 
     text_render = font.render(str(bluePointsCounter), True, (255, 255, 255))
-    #text_position = (1570,232)
     text_position = (winX + 985, winY + 132)
     SCREEN.blit(text_render, text_position)
 
@@ -395,7 +391,6 @@ def drawWinLose(winner: str, draw: bool):
             text_position = (winX + 900, winY + 300)
             SCREEN.blit(text_render, text_position)
 
-
     elif not draw:
         text_render = font.render("", True, (255, 255, 255))
         text_position = (winX + 941, winY + 63)
@@ -417,7 +412,7 @@ def invincibilityBlockRed():
     powerGridY = int((powerY-winY-25)/50)
 
     if grid[powerGridY][powerGridX] == 1:
-        invincibilityBlockRed()
+        invincibilityBlockRed() ### Repeat function if not able to place item there
     else:
         grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
 
