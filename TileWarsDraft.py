@@ -148,10 +148,6 @@ ultra_power_up = (225, 215, 0, 255)
 
 colors = [blank, red_base, blue_base, red_one, blue_one, red_two, blue_two, red_player, blue_player, power_up, ultra_power_up]
 
-#testImage = pg.image.load('TileColors.png')
-#testImageRect = testImage.get_rect()
-# testImageRect.center = (winX - 150, winY + 200)
-
 ### Custom Art:
 blank_art = pg.image.load('tile_art/BLANK.png')
 blank_art = pg.transform.scale(blank_art,(48,48))
@@ -444,7 +440,7 @@ def invincibilityBlockGeneral():
     global power_iter
     global ultraPower
 
-
+    ### Randomized Chance of Ultra Power-Up
     randomNum = randint(1, 2)
     if randomNum == 1:
         ultraPower.center = get_random_position()
@@ -457,7 +453,7 @@ def invincibilityBlockGeneral():
         powerGridX = int((powerX-winX-25)/50)
         powerGridY = int((powerY-winY-25)/50)
 
-        if grid[powerGridY][powerGridX] == 1 or grid[powerGridY][powerGridX] == 2:
+        if grid[powerGridY][powerGridX] == 1 or grid[powerGridY][powerGridX] == 2: ### Redo method if spawned on a base
             invincibilityBlockGeneral()
         else:
             grid[powerGridY][powerGridX] = ULTRA_POWER_UP ### Set the color to white for POWER_UP
@@ -528,13 +524,6 @@ def homeBases():
             gridY = int((posY-25)/50)
             
             currTile = grid[gridY][gridX] 
-        
-            if currTile == POWER_UP: ### If not invincibility block, then put base
-                #grid[gridY][gridX] = POWER_UP
-                print("WARNING!!!")
-                print("WARNING!!!")
-                print("WARNING!!!")
-                #invincibilityBlockBlue()
             
             grid[gridY][gridX] = BLUE_BASE
             
@@ -565,13 +554,6 @@ def homeBases():
             gridY = int((posY-25)/50)
             
             currTile = grid[gridY][gridX]
-            if currTile == POWER_UP: ### If not invincibility block, then put base
-                #grid[gridY][gridX] = POWER_UP 
-                ### Instead of replacing as power_up, replace as grid and place invincibility block someplace else
-                print("WARNING!!!")
-                print("WARNING!!!")
-                print("WARNING!!!")
-                #invincibilityBlockRed()
                
             grid[gridY][gridX] = RED_BASE
 
@@ -579,8 +561,7 @@ def homeBases():
             SCREEN.blit(art[grid[gridY][gridX]], art_rect[grid[gridY][gridX]].center)
 
 def playerCollision():
-    ### Runs if the players are on the
-    ### Same tile
+    ### Runs if the players are on the same tile
     
     global powerCountRed
     global powerCountBlue
@@ -591,51 +572,17 @@ def playerCollision():
     global redSpeedDivider 
     global blueSpeedDivider 
 
-    ### OLD Collision Method
-    #     
-    # if powerCountRed > powerCountBlue:
-    #     ### Blue respawns after 3 seconds
-    #     ### And Red's count decreases by
-    #     ### 1 (for now)
-    #     snakeBlue.center = (375 + winX, 75 + winY)
-    #     blueSpeed = 40 ### Wait for 5 seconds
-    #     blueMoveCounter = 0
-    #     powerCountRed -= 2
-    # elif powerCountRed < powerCountBlue:
-    #     ### Red respawns after 3 seconds
-    #     ### And Blue's count decreases
-    #     ### by 1 (for now)
-    #     snakeRed.center = (375 + winX, 675 + winY)
-    #     redSpeed = 40
-    #     redMoveCounter = 0
-    #     powerCountBlue -= 2
-    # elif powerCountRed == powerCountBlue:
-    #     ### BOTH respawn after 3 seconds
-    #     snakeRed.center = (375 + winX, 675 + winY)
-    #     redSpeed = 40
-    #     redMoveCounter = 0
-    #     snakeBlue.center = (375 + winX, 75 + winY)
-    #     blueSpeed = 40
-    #     blueMoveCounter = 0
-
-    ### New Collision Method
-    # Winner will respawn upon collision
+    ### Winner will respawn upon collision
     if redPointsCounter < bluePointsCounter:
-        ### Blue respawns after 3 seconds
-        ### And Red's count decreases by
-        ### 1 (for now)
+        ### Blue respawns after 3 seconds and Red's count decreases by 1 (for now)
         snakeBlue.center = (375 + winX, 75 + winY)
         blueSpeed = 40 ### Wait for 5 seconds
         blueMoveCounter = 0
-        #powerCountRed -= 2
     elif redPointsCounter > bluePointsCounter:
-        ### Red respawns after 5 seconds
-        ### And Blue's count decreases
-        ### by 1 (for now)
+        ### Red respawns after 5 seconds and Blue's count decreases by 1 (for now)
         snakeRed.center = (375 + winX, 675 + winY)
         redSpeed = 40
         redMoveCounter = 0
-        #powerCountBlue -= 2
     elif redPointsCounter == bluePointsCounter:
         ### BOTH respawn after 5 seconds
         snakeRed.center = (375 + winX, 675 + winY)
@@ -671,56 +618,51 @@ def drawTiles():
             pixelY = int((50*y)+winY)
 
             rect = pg.Rect(pixelX, pixelY, TILE_SIZE, TILE_SIZE)
-            #rect.center = (pixelX, pixelY)
 
-            # testImageRect.center = (pixelX + 25, pixelY + 25)
-            # SCREEN.blit(testImage, testImageRect)
             art_rect[grid[y][x]].center = (pixelX, pixelY)
 
             SCREEN.blit(art[grid[y][x]], art_rect[grid[y][x]].center)
 
-def squareGrid(player: str):
-    global snakeRed
-    global snakeBlue
+# def squareGrid(player: str):
+#     global snakeRed
+#     global snakeBlue
 
-    print("Function Runs!")
+#     print("Function Runs!")
 
-    if player == "Red":
+#     if player == "Red":
 
-        print("RED PLAYER SQUAREGRID")
+#         print("RED PLAYER SQUAREGRID")
 
-        snakeRedX = snakeRed.center[0]
-        snakeRedY = snakeRed.center[1]
+#         snakeRedX = snakeRed.center[0]
+#         snakeRedY = snakeRed.center[1]
 
-        try:
-            # gridRedX = int((snakeRedX-winX-25 + snakeRed_dir[0])/50)
-            # gridRedY = int((snakeRedY-winY-25 + snakeRed_dir[1])/50)
-            gridRedX = int((snakeRedX-winX-25)/50)
-            gridRedY = int((snakeRedY-winY-25)/50)
+#         try:
+#             gridRedX = int((snakeRedX-winX-25)/50)
+#             gridRedY = int((snakeRedY-winY-25)/50)
 
-            for i in range(gridRedX - 2, gridRedX + 2):
-                for j in range(gridRedY - 2, gridRedY + 2):
-                    currGrid = grid[j][i]
+#             for i in range(gridRedX - 2, gridRedX + 2):
+#                 for j in range(gridRedY - 2, gridRedY + 2):
+#                     currGrid = grid[j][i]
 
-                    print("Function Runs",(i*j)+1,"times")
+#                     print("Function Runs",(i*j)+1,"times")
 
-                    if currGrid == 0:
-                        currGrid = 3 
-                    elif currGrid == 1:
-                        currGrid = 1
-                    elif currGrid == 3:
-                        currGrid = 5
-                    elif currGrid == 5:
-                        currGrid = 5
-                    elif currGrid == 4:
-                        currGrid = 0
-                    elif currGrid == 6:
-                        currGrid = 4
-                    elif currGrid == 9:
-                        currGrid = 0
-                        powerCountRed += 1
-        except Exception:
-            print("Out of bounds!")
+#                     if currGrid == 0:
+#                         currGrid = 3 
+#                     elif currGrid == 1:
+#                         currGrid = 1
+#                     elif currGrid == 3:
+#                         currGrid = 5
+#                     elif currGrid == 5:
+#                         currGrid = 5
+#                     elif currGrid == 4:
+#                         currGrid = 0
+#                     elif currGrid == 6:
+#                         currGrid = 4
+#                     elif currGrid == 9:
+#                         currGrid = 0
+#                         powerCountRed += 1
+#         except Exception:
+#             print("Out of bounds!")
 
 
 
@@ -742,8 +684,6 @@ def speedAlter(player: str):
         ### Grid may go out of bounds. If this is the case, return
         ### 1 as the speed.
         try:
-            # gridRedX = int((snakeRedX-winX-25 + snakeRed_dir[0])/50)
-            # gridRedY = int((snakeRedY-winY-25 + snakeRed_dir[1])/50)
             gridRedX = int((snakeRedX-winX-25)/50)
             gridRedY = int((snakeRedY-winY-25)/50)
             currGrid = grid[gridRedY][gridRedX]
@@ -777,8 +717,6 @@ def speedAlter(player: str):
         ### Grid may go out of bounds. If this is the case, return
         ### 1 as the speed.
         try:
-            # gridRedX = int((snakeRedX-winX-25 + snakeRed_dir[0])/50)
-            # gridRedY = int((snakeRedY-winY-25 + snakeRed_dir[1])/50)
             gridBlueX = int((snakeBlueX-winX-25)/50)
             gridBlueY = int((snakeBlueY-winY-25)/50)
             currGrid = grid[gridBlueY][gridBlueX]
@@ -900,7 +838,7 @@ def tileColors(player: str):
         
         prevBlueGrid = grid[gridBlueY][gridBlueX] ### Get color of tile that snakeBlue is now on
     
-### While loop is solely for 5 second countdown
+### This while loop is solely for 5 second countdown
 while True:
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -1198,11 +1136,10 @@ while True:
 
 
 
-### This while loop has full respect to Players
+### This while loop has full respect to Players after the 5 seconds
 while True:
     print("gameTimer:",gameTimer)
     if gameTimer == -1:
-        # testVar = input("Testing input: ")
         break
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -1334,31 +1271,22 @@ while True:
             eighths = 0
             addedString = ""
 
-            # if (gameTimer % 60) < 10:
-            #     addedString = "0"
-            # if int(gameTimer / 3) == 0:
-            #     addedString = "" 
-            #     gameTimerText = addedString + str(gameTimer % 60)
-            # else:
-            #     gameTimerText = str(int(gameTimer/60)) + ":" + addedString + str(gameTimer % 60)
-            # gameTimer -= 1
-
             if (gameTimer % 60) < 10:
                 addedString = "0"
             gameTimerText = str(int(gameTimer/60)) + ":" + addedString + str(gameTimer % 60)
             gameTimer -= 1
 
         ### Time-Out Power-UPs with time limit here:
-        if redSpeedDivider  == 2:
+        if redSpeedDivider == 2:
             redSpeedDividerIter += 1
             #print("redSpeedDividerIter",redSpeedDividerIter)
-            if redSpeedDividerIter == 24:
+            if redSpeedDividerIter == 24: ### Expires after 3 seconds (24 * one-eighth of a second = 3 seconds)
                 redSpeedDivider = 1
                 redSpeedDividerIter = 0
 
         if blueSpeedDivider == 2:
             blueSpeedDividerIter += 1
-            if blueSpeedDividerIter == 24:
+            if blueSpeedDividerIter == 24: ### Expires after 3 seconds (24 * one-eighth of a second = 3 seconds)
                 blueSpeedDivider = 1
                 blueSpeedDividerIter = 0
 
@@ -1403,12 +1331,8 @@ while True:
                 snakeRed.move_ip(snakeRed_dir)
                 redMoveCounter = 0
                 tileColors("Red")
-                ### Problem (TO DO): Must have redSpeed be with
-                ### respect to next tile instead of current tile.
-                ### Create function to get next tile in direction
 
         tuple_add = [snakeRed.center, snakeRed_dir]
-
 
         ### Draw Previous snakeBlue with color based on the grid tile the player went over:
 
@@ -1462,59 +1386,23 @@ while True:
         gridRedX = int((snakeRedX-winX-25)/50)
         gridRedY = int((snakeRedY-winY-25)/50)
 
-        #gridRed = grid[gridRedY][gridRedX]
-
-
         gridBlueX = int((snakeBlueX-winX-25)/50)
         gridBlueY = int((snakeBlueY-winY-25)/50)
 
-        #gridBlue = grid[gridBlueY][gridBlueX]
-
-        #print("gridRedY:",gridRedY,"girdBlueY",gridBlueY)
-        #print("gridRedX:",gridRedX,"gridBlueX",gridBlueX)
         if gridRedY == gridBlueY and gridRedX == gridBlueX:
             playerCollision()
             print("Player Collision!!!")
 
         ### And then set variable for
         ### halting movement of defeated
-        ### player for 3 seconds
+        ### player for 5 seconds
 
         ### Draw all Front-End components:
         frontEnd()
-        #print("redSpeedDivider ",redSpeedDivider )
-        #print("redSpeedDividerIter",redSpeedDividerIter)
         print()
 
     pg.display.flip()
     clock.tick(60) 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ### Once the game is done:
 draw = True
@@ -1564,36 +1452,6 @@ while True:
             ### Make blinking effect for the Win and Lose messages
             draw = not draw
             drawWinLose(winner, draw)
-
-        ### Draw Previous snakeRed with color based on the grid tile the player went over:
-
-
-    #     if currRedDir == pg.K_w:
-    #         snakeRed_dir = (0, -TILE_SIZE)
-    #         dirsRed = {pg.K_w: 1, pg.K_s: 0, pg.K_a: 1, pg.K_d: 1}
-    #     if currRedDir == pg.K_s:
-    #         snakeRed_dir = (0, TILE_SIZE)
-    #         dirsRed = {pg.K_w: 0, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
-    #     if currRedDir == pg.K_a:
-    #         snakeRed_dir = (-TILE_SIZE, 0)
-    #         dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 0}
-    #     if currRedDir == pg.K_d:
-    #         snakeRed_dir = (TILE_SIZE, 0)
-    #         dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 0, pg.K_d: 1}
-
-        #print("winX:",winX,"winX + WINDOW:",winX + WINDOW)
-        #print("winY:",winY,"winY + WINDOW:",winY + WINDOW)
-        #print(dirsRed)
-
-        ### And then set variable for
-        ### halting movement of defeated
-        ### player for 3 seconds
-
-        ### Draw all Front-End components:
-        # frontEnd()
-        #print("redSpeedDivider ",redSpeedDivider )
-        #print("redSpeedDividerIter",redSpeedDividerIter)
-        # print("Done!")
 
     pg.display.flip()
     clock.tick(60) 
