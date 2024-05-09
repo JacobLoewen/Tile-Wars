@@ -80,10 +80,10 @@ i1 = 5
 j1 = 0
 
 #Default Timer:
-#gameTimer = 179 ### 3 Minutes (-1 second as 'GO' replaces '3:00')
+gameTimer = 179 ### 3 Minutes (-1 second as 'GO' replaces '3:00')
 
 #Testing Timer (Shorter for testing purposes)
-gameTimer = 29 ### 1/2 of a  Minute (-1 second as 'GO' replaces '0:30')
+# gameTimer = 29 ### 1/2 of a  Minute (-1 second as 'GO' replaces '0:30')
 
 gameTimerText = "GO!"
 eighths = 0
@@ -444,7 +444,7 @@ def invincibilityBlockGeneral():
     global ultraPower
 
     ### Randomized Chance of Ultra Power-Up
-    randomNum = randint(1, 2)
+    randomNum = randint(1, 3)
     if randomNum == 1:
         ultraPower.center = get_random_position()
         pg.draw.rect(SCREEN, colors[ULTRA_POWER_UP], ultraPower)
@@ -931,7 +931,7 @@ while True:
     # text_position = (winX + 355, winY - 65)
     # SCREEN.blit(text_render, text_position)
 
-    print()
+    # print()
 
     if i1 > 0: # Count from 5
         if j1 < (8): # (8 * 1/8 seconds)
@@ -1106,7 +1106,7 @@ while True:
 
 ### This while loop has full respect to Players after the 5 seconds
 while True:
-    print("gameTimer:",gameTimer)
+    # print("gameTimer:",gameTimer)
     if gameTimer == -1:
         break
     for event in pg.event.get():
@@ -1153,6 +1153,21 @@ while True:
 
             elif event.key == pg.K_a:
                 if redPowerToggle:
+                    ### Start Coding the 3x3 Power-Up Area
+                    if powerCountRed >= 5:
+                        snakeRedX = snakeRed.center[0]
+                        snakeRedY = snakeRed.center[1]
+                        gridRedX = int((snakeRedX-winX-25)/50)
+                        gridRedY = int((snakeRedY-winY-25)/50)
+                        for i in range(3):
+                            for j in range(3):
+                                try:
+                                    grid[gridRedY - 1 + j][gridRedX - 1 + i] = RED_TWO
+                                    print("WORKING?")
+                                except Exception:
+                                    print("EXCEPTION!!!")
+                                    continue
+                        powerCountRed -= 5
                     print("A Power-Up")
                 elif not (snakeRed.left - 2 < winX):
                     snakeRed_dir = (-TILE_SIZE, 0)
@@ -1185,6 +1200,21 @@ while True:
 
             elif event.key == pg.K_LEFT:
                 if bluePowerToggle:
+                    ### Start Coding the 3x3 Power-Up Area
+                    if powerCountBlue >= 5:
+                        snakeBlueX = snakeBlue.center[0]
+                        snakeBlueY = snakeBlue.center[1]
+                        gridBlueX = int((snakeBlueX-winX-25)/50)
+                        gridBlueY = int((snakeBlueY-winY-25)/50)
+                        for i in range(3):
+                            for j in range(3):
+                                try:
+                                    grid[gridBlueY - 1 + j][gridBlueX - 1 + i] = BLUE_TWO
+                                    print("WORKING?")
+                                except Exception:
+                                    print("EXCEPTION!!!")
+                                    continue
+                        powerCountBlue -= 5
                     print("LEFT Power-Up")
                 elif not (snakeBlue.left - 2 < winX):
                     snakeBlue_dir = (-TILE_SIZE, 0)
@@ -1367,7 +1397,7 @@ while True:
 
         ### Draw all Front-End components:
         frontEnd()
-        print()
+        # print()
 
     pg.display.flip()
     clock.tick(60) 
