@@ -211,7 +211,8 @@ def frontEnd():
     power_iter += 1
     ### Start with every 10 seconds and go up from there:
     if power_iter >= 90: ### 45 seconds * 2 half-seconds of time iteration equals 60 half seconds
-    #if power_iter >= 10: ### TEMPORARY
+    # if power_iter >= 10: ### TEMPORARY
+        eraseInvincibilityBlocks()
         invincibilityBlockBlue()
         invincibilityBlockRed()
         invincibilityBlockGeneral()
@@ -392,7 +393,9 @@ def drawWinLose(winner: str, draw: bool):
         text_position = (winX + 941, winY + 63)
         SCREEN.blit(text_render, text_position)
 
-def invincibilityBlockRed():
+### TO DO: In order to remove old invincibility blocks, quick way would be to go through the entire map and remove all
+### tiles with numbers 9 (power-up) or 10 (ultra-power-up). Can make a more efficient method for this another time.
+def invincibilityBlockRed():  
     global power 
     global colors
     global power_iter
@@ -475,6 +478,14 @@ def invincibilityBlockGeneral():
             grid[powerGridY][powerGridX] = POWER_UP ### Set the color to white for POWER_UP
 
     power_iter = 0
+
+def eraseInvincibilityBlocks():
+    for posX in range(25, 775, 50):
+        for posY in range (25, 775, 50):
+            gridX = int((posX-25)/50)
+            gridY = int((posY-25)/50)
+            if grid[gridY][gridX] == 9 or grid[gridY][gridX] == 10:
+                grid[gridY][gridX] = BLANK
 
 def countPoints():
     global redPointsCounter
@@ -622,49 +633,6 @@ def drawTiles():
             art_rect[grid[y][x]].center = (pixelX, pixelY)
 
             SCREEN.blit(art[grid[y][x]], art_rect[grid[y][x]].center)
-
-# def squareGrid(player: str):
-#     global snakeRed
-#     global snakeBlue
-
-#     print("Function Runs!")
-
-#     if player == "Red":
-
-#         print("RED PLAYER SQUAREGRID")
-
-#         snakeRedX = snakeRed.center[0]
-#         snakeRedY = snakeRed.center[1]
-
-#         try:
-#             gridRedX = int((snakeRedX-winX-25)/50)
-#             gridRedY = int((snakeRedY-winY-25)/50)
-
-#             for i in range(gridRedX - 2, gridRedX + 2):
-#                 for j in range(gridRedY - 2, gridRedY + 2):
-#                     currGrid = grid[j][i]
-
-#                     print("Function Runs",(i*j)+1,"times")
-
-#                     if currGrid == 0:
-#                         currGrid = 3 
-#                     elif currGrid == 1:
-#                         currGrid = 1
-#                     elif currGrid == 3:
-#                         currGrid = 5
-#                     elif currGrid == 5:
-#                         currGrid = 5
-#                     elif currGrid == 4:
-#                         currGrid = 0
-#                     elif currGrid == 6:
-#                         currGrid = 4
-#                     elif currGrid == 9:
-#                         currGrid = 0
-#                         powerCountRed += 1
-#         except Exception:
-#             print("Out of bounds!")
-
-
 
 def speedAlter(player: str):
     global snakeRed
