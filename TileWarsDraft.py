@@ -18,7 +18,7 @@ winY: int = int((screenY - 750) / 2)
 
 TILE_SIZE = 50
 
-POWER_MAX = 5
+POWER_MAX = 10
 
 ### GRID PLACEHOLDERS:
 BLANK = 0
@@ -720,6 +720,26 @@ def speedAlter(player: str):
         except Exception:
             blueSpeed = 2 / blueSpeedDivider 
 
+def dirRandomization(player: str):
+    global dirArrayRed
+    global dirArrayBlue
+    if player == "red":
+        dirArrayRedTemp = [pg.K_w, pg.K_a, pg.K_s, pg.K_d]
+        dirArrayRed = []
+        for i in range(4):
+            randNum = randint(0, 3-i)
+            dirArrayRed.append(dirArrayRedTemp[randNum])
+            dirArrayRedTemp.remove(dirArrayRedTemp[randNum])
+
+    if player == "blue":
+        dirArrayBlueTemp = [pg.K_UP, pg.K_LEFT, pg.K_DOWN, pg.K_RIGHT]
+        dirArrayBlue = []
+        for i in range(4):
+            randNum = randint(0, 3-i)
+            dirArrayBlue.append(dirArrayBlueTemp[randNum])
+            dirArrayBlueTemp.remove(dirArrayBlueTemp[randNum])
+
+
 def tileColors(player: str):
     global snakeRed
     global snakeBlue
@@ -858,7 +878,7 @@ while True:
                 if redPowerToggle:
                     if powerCountRed >= 4:
                         blueRandomizer = True
-                        blueRandomizerIter = 32 ### 32 one-eighth seconds = 4 seconds
+                        blueRandomizerIter = 64 ### 64 one-eighth seconds = 5 seconds
                         powerCountRed -= 4
                     ### Create Randomization Controls Power-Up
                     print("S Power-Up")
@@ -1164,7 +1184,8 @@ while True:
                 if redPowerToggle:
                     if powerCountRed >= 4:
                         blueRandomizer = True
-                        blueRandomizerIter = 32 ### 32 one-eighth seconds = 4 seconds
+                        dirRandomization("blue")
+                        blueRandomizerIter = 64 ### 64 one-eighth seconds = 5 seconds
                         powerCountRed -= 4
                     ### Create Randomization Controls Power-Up
                     print("S Power-Up")
@@ -1216,7 +1237,8 @@ while True:
                 if bluePowerToggle:
                     if powerCountBlue >= 4:
                         redRandomizer = True
-                        redRandomizerIter = 32 ### 32 one-eighth seconds = 4 seconds
+                        dirRandomization("red")
+                        redRandomizerIter = 40 ### 40 one-eighth seconds = 5 seconds
                         powerCountBlue -= 4
                     ### Create Randomization Controls Power-Up
                     print("DOWN Power-Up")
@@ -1319,11 +1341,13 @@ while True:
             redRandomizerIter -= 1
             if redRandomizerIter == 0:
                 redRandomizer = False  
+                dirArrayRed = [pg.K_w, pg.K_a, pg.K_s, pg.K_d]
 
         if blueRandomizer:
             blueRandomizerIter -= 1
             if blueRandomizerIter == 0:
-                blueRandomizer = False          
+                blueRandomizer = False  
+                dirArrayBlue = [pg.K_UP, pg.K_LEFT, pg.K_DOWN, pg.K_RIGHT]       
 
         ### Draw Previous snakeRed with color based on the grid tile the player went over:
 
