@@ -76,6 +76,16 @@ blueSpeedDivider  = 1
 redSpeedDividerIter = 0
 blueSpeedDividerIter = 0
 
+### Initializations for Randomization Power-Up
+redRandomizer = False
+blueRandomizer = False
+
+redRandomizerIter = 0
+blueRandomizerIter = 0
+
+# dirArray = [pg.K_w, pg.K_s, pg.K_a, pg.K_d]
+
+
 i1 = 5
 j1 = 0
 
@@ -845,6 +855,11 @@ while True:
 
             elif event.key == pg.K_s:
                 if redPowerToggle:
+                    if powerCountRed >= 4:
+                        blueRandomizer = True
+                        blueRandomizerIter = 32 ### 32 one-eighth seconds = 4 seconds
+                        powerCountRed -= 4
+                    ### Create Randomization Controls Power-Up
                     print("S Power-Up")
                 elif not (snakeRed.bottom + 2 > WINDOW + winY):
                     snakeRed_dir = (0, TILE_SIZE)
@@ -1146,6 +1161,11 @@ while True:
 
             elif event.key == pg.K_s:
                 if redPowerToggle:
+                    if powerCountRed >= 4:
+                        blueRandomizer = True
+                        blueRandomizerIter = 32 ### 32 one-eighth seconds = 4 seconds
+                        powerCountRed -= 4
+                    ### Create Randomization Controls Power-Up
                     print("S Power-Up")
                 elif not (snakeRed.bottom + 2 > WINDOW + winY):
                     snakeRed_dir = (0, TILE_SIZE)
@@ -1193,6 +1213,11 @@ while True:
 
             elif event.key == pg.K_DOWN:
                 if bluePowerToggle:
+                    if powerCountBlue >= 4:
+                        redRandomizer = True
+                        redRandomizerIter = 32 ### 32 one-eighth seconds = 4 seconds
+                        powerCountBlue -= 4
+                    ### Create Randomization Controls Power-Up
                     print("DOWN Power-Up")
                 elif not (snakeBlue.bottom + 2 > WINDOW + winY):
                     snakeBlue_dir = (0, TILE_SIZE)
@@ -1287,6 +1312,17 @@ while True:
             if blueSpeedDividerIter == 24: ### Expires after 3 seconds (24 * one-eighth of a second = 3 seconds)
                 blueSpeedDivider = 1
                 blueSpeedDividerIter = 0
+
+
+        if redRandomizer:
+            redRandomizerIter -= 1
+            if redRandomizerIter == 0:
+                redRandomizer = False  
+
+        if blueRandomizer:
+            blueRandomizerIter -= 1
+            if blueRandomizerIter == 0:
+                blueRandomizer = False          
 
         ### Draw Previous snakeRed with color based on the grid tile the player went over:
 
