@@ -1204,7 +1204,8 @@ while True:
                         for i in range(3):
                             for j in range(3):
                                 try:
-                                    grid[gridRedY - 1 + j][gridRedX - 1 + i] = RED_TWO
+                                    if grid[gridRedY - 1 + j][gridRedX - 1 + i] != RED_TWO:
+                                        grid[gridRedY - 1 + j][gridRedX - 1 + i] = RED_ONE
                                     print("WORKING?")
                                 except Exception:
                                     print("EXCEPTION!!!")
@@ -1257,7 +1258,8 @@ while True:
                         for i in range(3):
                             for j in range(3):
                                 try:
-                                    grid[gridBlueY - 1 + j][gridBlueX - 1 + i] = BLUE_TWO
+                                    if grid[gridBlueY - 1 + j][gridBlueX - 1 + i] != BLUE_TWO: 
+                                        grid[gridBlueY - 1 + j][gridBlueX - 1 + i] = BLUE_ONE
                                     print("WORKING?")
                                 except Exception:
                                     print("EXCEPTION!!!")
