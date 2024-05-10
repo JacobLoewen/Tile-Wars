@@ -83,7 +83,8 @@ blueRandomizer = False
 redRandomizerIter = 0
 blueRandomizerIter = 0
 
-# dirArray = [pg.K_w, pg.K_s, pg.K_a, pg.K_d]
+dirArrayRed = [pg.K_w, pg.K_a, pg.K_s, pg.K_d]
+dirArrayBlue = [pg.K_UP, pg.K_LEFT, pg.K_DOWN, pg.K_RIGHT]
 
 
 i1 = 5
@@ -130,8 +131,8 @@ screenY = WINDOW
 
 clock = pg.time.Clock()
 
-dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
-dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 1}
+dirsRed = {dirArrayRed[0]: 1, dirArrayRed[2]: 1, dirArrayRed[1]: 1, dirArrayRed[3]: 1}
+dirsBlue = {dirArrayBlue[0]: 1, dirArrayBlue[2]: 1, dirArrayBlue[1]: 1, dirArrayBlue[3]: 1}
 currRedDir = pg.K_0
 currBlueDir = pg.K_1
 prevSnakeRed = snakeRed.copy()
@@ -843,7 +844,7 @@ while True:
                 bluePowerToggle = True
 
             ### Movement
-            if event.key == pg.K_w:
+            if event.key == dirArrayRed[0]:
                 if redPowerToggle:
                     if powerCountRed >= 3:
                         redSpeedDivider = 2
@@ -853,7 +854,7 @@ while True:
                     snakeRed_dir = (0, -TILE_SIZE)
                     currRedDir = event.key
 
-            elif event.key == pg.K_s:
+            elif event.key == dirArrayRed[2]:
                 if redPowerToggle:
                     if powerCountRed >= 4:
                         blueRandomizer = True
@@ -865,14 +866,14 @@ while True:
                     snakeRed_dir = (0, TILE_SIZE)
                     currRedDir = event.key
 
-            elif event.key == pg.K_a:
+            elif event.key == dirArrayRed[1]:
                 if redPowerToggle:
                     print("A Power-Up")
                 elif not (snakeRed.left - 2 < winX):
                     snakeRed_dir = (-TILE_SIZE, 0)
                     currRedDir = event.key
 
-            elif event.key == pg.K_d:
+            elif event.key == dirArrayRed[3]:
                 if redPowerToggle:
                     print("D Power-Up")
                 elif not (snakeRed.right + 2 > WINDOW + winX):
@@ -880,7 +881,7 @@ while True:
                     currRedDir = event.key
 
             ### Blue Player:
-            if event.key == pg.K_UP:
+            if event.key == dirArrayBlue[0]:
                 if bluePowerToggle:
                     if powerCountBlue >= 3:
                         powerCountBlue -= 3
@@ -890,21 +891,21 @@ while True:
                     snakeBlue_dir = (0, -TILE_SIZE)
                     currBlueDir = event.key
 
-            elif event.key == pg.K_DOWN:
+            elif event.key == dirArrayBlue[2]:
                 if bluePowerToggle:
                     print("DOWN Power-Up")
                 elif not (snakeBlue.bottom + 2 > WINDOW + winY):
                     snakeBlue_dir = (0, TILE_SIZE)
                     currBlueDir = event.key
 
-            elif event.key == pg.K_LEFT:
+            elif event.key == dirArrayBlue[1]:
                 if bluePowerToggle:
                     print("LEFT Power-Up")
                 elif not (snakeBlue.left - 2 < winX):
                     snakeBlue_dir = (-TILE_SIZE, 0)
                     currBlueDir = event.key
 
-            elif event.key == pg.K_RIGHT:
+            elif event.key == dirArrayBlue[3]:
                 if bluePowerToggle:
                     print("RIGHT Power-Up")
                 elif not (snakeBlue.right + 2 > WINDOW + winX):
@@ -992,30 +993,30 @@ while True:
         gridRedX = int((snakeRedX-winX-25)/50)
         gridRedY = int((snakeRedY-winY-25)/50)
 
-        if currRedDir == pg.K_w:
+        if currRedDir == dirArrayRed[0]:
             snakeRed_dir = (0, -TILE_SIZE)
-            dirsRed = {pg.K_w: 1, pg.K_s: 0, pg.K_a: 1, pg.K_d: 1}
-        if currRedDir == pg.K_s:
+            dirsRed = {dirArrayRed[0]: 1, dirArrayRed[2]: 0, dirArrayRed[1]: 1, dirArrayRed[3]: 1}
+        if currRedDir == dirArrayRed[2]:
             snakeRed_dir = (0, TILE_SIZE)
-            dirsRed = {pg.K_w: 0, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
-        if currRedDir == pg.K_a:
+            dirsRed = {dirArrayRed[0]: 0, dirArrayRed[2]: 1, dirArrayRed[1]: 1, dirArrayRed[3]: 1}
+        if currRedDir == dirArrayRed[1]:
             snakeRed_dir = (-TILE_SIZE, 0)
-            dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 0}
-        if currRedDir == pg.K_d:
+            dirsRed = {dirArrayRed[0]: 1, dirArrayRed[2]: 1, dirArrayRed[1]: 1, dirArrayRed[3]: 0}
+        if currRedDir == dirArrayRed[3]:
             snakeRed_dir = (TILE_SIZE, 0)
-            dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 0, pg.K_d: 1}
+            dirsRed = {dirArrayRed[0]: 1, dirArrayRed[2]: 1, dirArrayRed[1]: 0, dirArrayRed[3]: 1}
 
         #print("winX:",winX,"winX + WINDOW:",winX + WINDOW)
         #print("winY:",winY,"winY + WINDOW:",winY + WINDOW)
         #print(dirsRed)
 
-        if (snakeRed.left - 2 < winX or grid[gridRedY][gridRedX - 1] == BLUE_BASE) and dirsRed[pg.K_d] == 0:
+        if (snakeRed.left - 2 < winX or grid[gridRedY][gridRedX - 1] == BLUE_BASE) and dirsRed[dirArrayRed[3]] == 0:
             print("Can no longer go left")
-        elif (snakeRed.right + 2 > WINDOW + winX or grid[gridRedY][gridRedX + 1] == BLUE_BASE) and dirsRed[pg.K_a] == 0:
+        elif (snakeRed.right + 2 > WINDOW + winX or grid[gridRedY][gridRedX + 1] == BLUE_BASE) and dirsRed[dirArrayRed[1]] == 0:
             print("Can no longer go right")
-        elif (snakeRed.top - 2 < winY or grid[gridRedY - 1][gridRedX] == BLUE_BASE) and dirsRed[pg.K_s] == 0:
+        elif (snakeRed.top - 2 < winY or grid[gridRedY - 1][gridRedX] == BLUE_BASE) and dirsRed[dirArrayRed[2]] == 0:
             print("Can no longer go up")
-        elif (snakeRed.bottom + 2 > WINDOW + winY or grid[gridRedY + 1][gridRedX] == BLUE_BASE) and dirsRed[pg.K_w] == 0:
+        elif (snakeRed.bottom + 2 > WINDOW + winY or grid[gridRedY + 1][gridRedX] == BLUE_BASE) and dirsRed[dirArrayRed[0]] == 0:
             print("Can no longer go down")
         else:
             prevSnakeRed = snakeRed.copy()
@@ -1040,26 +1041,26 @@ while True:
         gridBlueX = int((snakeBlueX-winX-25)/50)
         gridBlueY = int((snakeBlueY-winY-25)/50)
 
-        if currBlueDir == pg.K_UP:
+        if currBlueDir == dirArrayBlue[0]:
             snakeBlue_dir = (0, -TILE_SIZE)
-            dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 0, pg.K_LEFT: 1, pg.K_RIGHT: 1}
-        if currBlueDir == pg.K_DOWN:
+            dirsBlue = {dirArrayBlue[0]: 1, dirArrayBlue[2]: 0, dirArrayBlue[1]: 1, dirArrayBlue[3]: 1}
+        if currBlueDir == dirArrayBlue[2]:
             snakeBlue_dir = (0, TILE_SIZE)
-            dirsBlue = {pg.K_UP: 0, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 1}
-        if currBlueDir == pg.K_LEFT:
+            dirsBlue = {dirArrayBlue[0]: 0, dirArrayBlue[2]: 1, dirArrayBlue[1]: 1, dirArrayBlue[3]: 1}
+        if currBlueDir == dirArrayBlue[1]:
             snakeBlue_dir = (-TILE_SIZE, 0)
-            dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 0}
-        if currBlueDir == pg.K_RIGHT:
+            dirsBlue = {dirArrayBlue[0]: 1, dirArrayBlue[2]: 1, dirArrayBlue[1]: 1, dirArrayBlue[3]: 0}
+        if currBlueDir == dirArrayBlue[3]:
             snakeBlue_dir = (TILE_SIZE, 0)
-            dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 0, pg.K_RIGHT: 1}
+            dirsBlue = {dirArrayBlue[0]: 1, dirArrayBlue[2]: 1, dirArrayBlue[1]: 0, dirArrayBlue[3]: 1}
 
-        if (snakeBlue.left - 2 < winX or grid[gridBlueY][gridBlueX - 1] == RED_BASE) and dirsBlue[pg.K_RIGHT] == 0:
+        if (snakeBlue.left - 2 < winX or grid[gridBlueY][gridBlueX - 1] == RED_BASE) and dirsBlue[dirArrayBlue[3]] == 0:
             print("Can no longer go left")
-        elif (snakeBlue.right + 2 > WINDOW + winX or grid[gridBlueY][gridBlueX + 1] == RED_BASE) and dirsBlue[pg.K_LEFT] == 0:
+        elif (snakeBlue.right + 2 > WINDOW + winX or grid[gridBlueY][gridBlueX + 1] == RED_BASE) and dirsBlue[dirArrayBlue[1]] == 0:
             print("Can no longer go right")
-        elif (snakeBlue.top - 2 < winY or grid[gridBlueY - 1][gridBlueX] == RED_BASE) and dirsBlue[pg.K_DOWN] == 0:
+        elif (snakeBlue.top - 2 < winY or grid[gridBlueY - 1][gridBlueX] == RED_BASE) and dirsBlue[dirArrayBlue[2]] == 0:
             print("Can no longer go up")
-        elif (snakeBlue.bottom + 2 > WINDOW + winY or grid[gridBlueY + 1][gridBlueX] == RED_BASE) and dirsBlue[pg.K_UP] == 0:
+        elif (snakeBlue.bottom + 2 > WINDOW + winY or grid[gridBlueY + 1][gridBlueX] == RED_BASE) and dirsBlue[dirArrayBlue[0]] == 0:
             print("Can no longer go down")
         else:
             prevSnakeBlue = snakeBlue.copy()
@@ -1149,7 +1150,7 @@ while True:
                 bluePowerToggle = True
 
             ### Movement
-            if event.key == pg.K_w:
+            if event.key == dirArrayRed[0]:
                 if redPowerToggle:
                     if powerCountRed >= 3:
                         redSpeedDivider = 2
@@ -1159,7 +1160,7 @@ while True:
                     snakeRed_dir = (0, -TILE_SIZE)
                     currRedDir = event.key
 
-            elif event.key == pg.K_s:
+            elif event.key == dirArrayRed[2]:
                 if redPowerToggle:
                     if powerCountRed >= 4:
                         blueRandomizer = True
@@ -1171,7 +1172,7 @@ while True:
                     snakeRed_dir = (0, TILE_SIZE)
                     currRedDir = event.key
 
-            elif event.key == pg.K_a:
+            elif event.key == dirArrayRed[1]:
                 if redPowerToggle:
                     ### Start Coding the 3x3 Power-Up Area
                     if powerCountRed >= 5:
@@ -1193,7 +1194,7 @@ while True:
                     snakeRed_dir = (-TILE_SIZE, 0)
                     currRedDir = event.key
 
-            elif event.key == pg.K_d:
+            elif event.key == dirArrayRed[3]:
                 if redPowerToggle:
                     print("D Power-Up")
                 elif not (snakeRed.right + 2 > WINDOW + winX):
@@ -1201,7 +1202,7 @@ while True:
                     currRedDir = event.key
 
             ### Blue Player:
-            if event.key == pg.K_UP:
+            if event.key == dirArrayBlue[0]:
                 if bluePowerToggle:
                     if powerCountBlue >= 3:
                         powerCountBlue -= 3
@@ -1211,7 +1212,7 @@ while True:
                     snakeBlue_dir = (0, -TILE_SIZE)
                     currBlueDir = event.key
 
-            elif event.key == pg.K_DOWN:
+            elif event.key == dirArrayBlue[2]:
                 if bluePowerToggle:
                     if powerCountBlue >= 4:
                         redRandomizer = True
@@ -1223,7 +1224,7 @@ while True:
                     snakeBlue_dir = (0, TILE_SIZE)
                     currBlueDir = event.key
 
-            elif event.key == pg.K_LEFT:
+            elif event.key == dirArrayBlue[1]:
                 if bluePowerToggle:
                     ### Start Coding the 3x3 Power-Up Area
                     if powerCountBlue >= 5:
@@ -1245,7 +1246,7 @@ while True:
                     snakeBlue_dir = (-TILE_SIZE, 0)
                     currBlueDir = event.key
 
-            elif event.key == pg.K_RIGHT:
+            elif event.key == dirArrayBlue[3]:
                 if bluePowerToggle:
                     print("RIGHT Power-Up")
                 elif not (snakeBlue.right + 2 > WINDOW + winX):
@@ -1332,30 +1333,30 @@ while True:
         gridRedX = int((snakeRedX-winX-25)/50)
         gridRedY = int((snakeRedY-winY-25)/50)
 
-        if currRedDir == pg.K_w:
+        if currRedDir == dirArrayRed[0]:
             snakeRed_dir = (0, -TILE_SIZE)
-            dirsRed = {pg.K_w: 1, pg.K_s: 0, pg.K_a: 1, pg.K_d: 1}
-        if currRedDir == pg.K_s:
+            dirsRed = {dirArrayRed[0]: 1, dirArrayRed[2]: 0, dirArrayRed[1]: 1, dirArrayRed[3]: 1}
+        if currRedDir == dirArrayRed[2]:
             snakeRed_dir = (0, TILE_SIZE)
-            dirsRed = {pg.K_w: 0, pg.K_s: 1, pg.K_a: 1, pg.K_d: 1}
-        if currRedDir == pg.K_a:
+            dirsRed = {dirArrayRed[0]: 0, dirArrayRed[2]: 1, dirArrayRed[1]: 1, dirArrayRed[3]: 1}
+        if currRedDir == dirArrayRed[1]:
             snakeRed_dir = (-TILE_SIZE, 0)
-            dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 1, pg.K_d: 0}
-        if currRedDir == pg.K_d:
+            dirsRed = {dirArrayRed[0]: 1, dirArrayRed[2]: 1, dirArrayRed[1]: 1, dirArrayRed[3]: 0}
+        if currRedDir == dirArrayRed[3]:
             snakeRed_dir = (TILE_SIZE, 0)
-            dirsRed = {pg.K_w: 1, pg.K_s: 1, pg.K_a: 0, pg.K_d: 1}
+            dirsRed = {dirArrayRed[0]: 1, dirArrayRed[2]: 1, dirArrayRed[1]: 0, dirArrayRed[3]: 1}
 
         #print("winX:",winX,"winX + WINDOW:",winX + WINDOW)
         #print("winY:",winY,"winY + WINDOW:",winY + WINDOW)
         #print(dirsRed)
 
-        if (snakeRed.left - 2 < winX or grid[gridRedY][gridRedX - 1] == BLUE_BASE) and dirsRed[pg.K_d] == 0:
+        if (snakeRed.left - 2 < winX or grid[gridRedY][gridRedX - 1] == BLUE_BASE) and dirsRed[dirArrayRed[3]] == 0:
             print("Can no longer go left")
-        elif (snakeRed.right + 2 > WINDOW + winX or grid[gridRedY][gridRedX + 1] == BLUE_BASE) and dirsRed[pg.K_a] == 0:
+        elif (snakeRed.right + 2 > WINDOW + winX or grid[gridRedY][gridRedX + 1] == BLUE_BASE) and dirsRed[dirArrayRed[1]] == 0:
             print("Can no longer go right")
-        elif (snakeRed.top - 2 < winY or grid[gridRedY - 1][gridRedX] == BLUE_BASE) and dirsRed[pg.K_s] == 0:
+        elif (snakeRed.top - 2 < winY or grid[gridRedY - 1][gridRedX] == BLUE_BASE) and dirsRed[dirArrayRed[2]] == 0:
             print("Can no longer go up")
-        elif (snakeRed.bottom + 2 > WINDOW + winY or grid[gridRedY + 1][gridRedX] == BLUE_BASE) and dirsRed[pg.K_w] == 0:
+        elif (snakeRed.bottom + 2 > WINDOW + winY or grid[gridRedY + 1][gridRedX] == BLUE_BASE) and dirsRed[dirArrayRed[0]] == 0:
             print("Can no longer go down")
         else:
             prevSnakeRed = snakeRed.copy()
@@ -1376,26 +1377,26 @@ while True:
         gridBlueX = int((snakeBlueX-winX-25)/50)
         gridBlueY = int((snakeBlueY-winY-25)/50)
 
-        if currBlueDir == pg.K_UP:
+        if currBlueDir == dirArrayBlue[0]:
             snakeBlue_dir = (0, -TILE_SIZE)
-            dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 0, pg.K_LEFT: 1, pg.K_RIGHT: 1}
-        if currBlueDir == pg.K_DOWN:
+            dirsBlue = {dirArrayBlue[0]: 1, dirArrayBlue[2]: 0, dirArrayBlue[1]: 1, dirArrayBlue[3]: 1}
+        if currBlueDir == dirArrayBlue[2]:
             snakeBlue_dir = (0, TILE_SIZE)
-            dirsBlue = {pg.K_UP: 0, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 1}
-        if currBlueDir == pg.K_LEFT:
+            dirsBlue = {dirArrayBlue[0]: 0, dirArrayBlue[2]: 1, dirArrayBlue[1]: 1, dirArrayBlue[3]: 1}
+        if currBlueDir == dirArrayBlue[1]:
             snakeBlue_dir = (-TILE_SIZE, 0)
-            dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 1, pg.K_RIGHT: 0}
-        if currBlueDir == pg.K_RIGHT:
+            dirsBlue = {dirArrayBlue[0]: 1, dirArrayBlue[2]: 1, dirArrayBlue[1]: 1, dirArrayBlue[3]: 0}
+        if currBlueDir == dirArrayBlue[3]:
             snakeBlue_dir = (TILE_SIZE, 0)
-            dirsBlue = {pg.K_UP: 1, pg.K_DOWN: 1, pg.K_LEFT: 0, pg.K_RIGHT: 1}
+            dirsBlue = {dirArrayBlue[0]: 1, dirArrayBlue[2]: 1, dirArrayBlue[1]: 0, dirArrayBlue[3]: 1}
 
-        if (snakeBlue.left - 2 < winX or grid[gridBlueY][gridBlueX - 1] == RED_BASE) and dirsBlue[pg.K_RIGHT] == 0:
+        if (snakeBlue.left - 2 < winX or grid[gridBlueY][gridBlueX - 1] == RED_BASE) and dirsBlue[dirArrayBlue[3]] == 0:
             print("Can no longer go left")
-        elif (snakeBlue.right + 2 > WINDOW + winX or grid[gridBlueY][gridBlueX + 1] == RED_BASE) and dirsBlue[pg.K_LEFT] == 0:
+        elif (snakeBlue.right + 2 > WINDOW + winX or grid[gridBlueY][gridBlueX + 1] == RED_BASE) and dirsBlue[dirArrayBlue[1]] == 0:
             print("Can no longer go right")
-        elif (snakeBlue.top - 2 < winY or grid[gridBlueY - 1][gridBlueX] == RED_BASE) and dirsBlue[pg.K_DOWN] == 0:
+        elif (snakeBlue.top - 2 < winY or grid[gridBlueY - 1][gridBlueX] == RED_BASE) and dirsBlue[dirArrayBlue[2]] == 0:
             print("Can no longer go up")
-        elif (snakeBlue.bottom + 2 > WINDOW + winY or grid[gridBlueY + 1][gridBlueX] == RED_BASE) and dirsBlue[pg.K_UP] == 0:
+        elif (snakeBlue.bottom + 2 > WINDOW + winY or grid[gridBlueY + 1][gridBlueX] == RED_BASE) and dirsBlue[dirArrayBlue[0]] == 0:
             print("Can no longer go down")
         else:
             prevSnakeBlue = snakeBlue.copy()
